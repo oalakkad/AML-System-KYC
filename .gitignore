@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# SQLite database files — local/demo data, never committed
+*.db
+*.db-journal
+prisma/dev.db
+
+# encrypted document blobs (KYC uploads) and admin-uploaded logo — real
+# user data, not source code; lives on the server's disk, not in git
+/storage/
+/public/uploads/
+
+# unrelated local tooling artifact, not part of this app
+/ruvector.db

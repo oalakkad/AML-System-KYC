@@ -1,0 +1,547 @@
+// AML System — Prisma schema
+//
+// SQLite is used for local development. For production, switch provider to
+// "postgresql" and set DATABASE_URL accordingly (see .env). To stay portable:
+//  - enum-like fields are String, values enforced by zod + the unions in src/lib/constants.ts
+//  - list/object fields are JSON-encoded strings (suffix ...Json)
+//  - fields with suffix ...Enc hold AES-256-GCM ciphertext (see src/lib/crypto.ts)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nameEn       String
+  nameAr       String   @default("")
+  role         String // FRONT_OFFICE | COMPLIANCE_OFFICER | SENIOR_MANAGER | ADMIN
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  casesCreated  KycCase[]  @relation("CaseMaker")
+  casesChecked  KycCase[]  @relation("CaseChecker")
+  casesApproved KycCase[]  @relation("CaseApprover")
+  auditLogs     AuditLog[]
+  documents     Document[]
+
+  transactionsEntered Transaction[]   @relation("TransactionEnteredBy")
+  screeningRules      ScreeningRule[] @relation("RuleCreatedBy")
+  alertsResolved      Alert[]         @relation("AlertResolvedBy")
+
+  investigationsOpened InvestigationCase[] @relation("InvestigationOpenedBy")
+  investigationsClosed InvestigationCase[] @relation("InvestigationClosedBy")
+  strReportsPrepared   StrReport[]         @relation("StrPreparedBy")
+}
+
+// Client portal account — separate auth domain from staff `User`. Clients
+// self-register and see cases matched to them via KycCase.clientEmail.
+model ClientUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nameEn       String
+  nameAr       String   @default("")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  documents    Document[] @relation("ClientDocuments")
+  auditLogs    AuditLog[]
+  casesCreated KycCase[]  @relation("CaseClientMaker")
+}
+
+model Country {
+  code       String  @id // ISO 3166-1 alpha-2
+  nameEn     String
+  nameAr     String
+  fatfStatus String  @default("NONE") // NONE | GREY | BLACK
+  active     Boolean @default(true)
+}
+
+model KycCase {
+  id         String  @id @default(cuid())
+  caseNumber String  @unique // KYC-YYYY-NNNNN
+  clientType String  @default("INDIVIDUAL") // INDIVIDUAL | CORPORATE — decides which profile is populated
+  formType   String // NEW_CLIENT | KYC_UPDATE
+  clientNo   String? // existing client number (KYC updates)
+  status     String  @default("DRAFT") // DRAFT | PENDING_COMPLIANCE | RETURNED | PENDING_MANAGER | APPROVED | REJECTED
+
+  // Created by staff XOR self-created by a portal client — exactly one is set.
+  makerId       String?
+  maker         User?       @relation("CaseMaker", fields: [makerId], references: [id])
+  clientMakerId String?
+  clientMaker   ClientUser? @relation("CaseClientMaker", fields: [clientMakerId], references: [id])
+  checkerId     String?
+  checker       User?       @relation("CaseChecker", fields: [checkerId], references: [id])
+  approverId    String?
+  approver      User?       @relation("CaseApprover", fields: [approverId], references: [id])
+
+  // Risk assessment
+  systemRiskScore       Int?
+  systemRiskRating      String? // LOW | MEDIUM | HIGH
+  riskFactorsJson       String? // [{ key, points }] breakdown from the risk engine
+  finalRiskRating       String? // maker may only raise above system rating
+  overrideJustification String?
+
+  // Workflow decisions
+  submittedAt        DateTime?
+  complianceDecision String? // APPROVED | REJECTED | RETURNED | ESCALATED
+  complianceNotes    String?
+  complianceAt       DateTime?
+  managerDecision    String? // APPROVED | REJECTED
+  managerNotes       String?
+  managerAt          DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Portal client-signature (independent of the internal maker→checker→approver
+  // workflow — see IMPLEMENTATION_PLAN.md §12). clientEmail is intentionally
+  // plaintext (not …Enc): it exists purely to match this case to a self-service
+  // ClientUser portal account and is lower-sensitivity than civil ID/IBAN/etc.
+  clientEmail         String?
+  clientSignedAt      DateTime?
+  clientSignatureName String?
+
+  // Ongoing/perpetual risk re-assessment (CRA) — periodically re-scores an
+  // APPROVED client using current profile data, separate from the one-time
+  // onboarding decision above (systemRiskRating/finalRiskRating). See
+  // src/lib/risk/cra.ts. Null until the first recalculation runs.
+  craScore          Int?
+  craBand           String? // LOW | MEDIUM | HIGH | CRITICAL
+  craLastAssessedAt DateTime?
+  craNextReviewAt   DateTime?
+
+  profile           KycProfile?
+  corporateProfile  CorporateProfile?
+  documents         Document[]
+  auditLogs         AuditLog[]
+  transactions      Transaction[]
+  investigationCases InvestigationCase[]
+  strReports         StrReport[]
+
+  @@index([status])
+  @@index([makerId, status])
+  @@index([clientEmail])
+  @@index([craBand])
+  @@index([clientMakerId])
+}
+
+model KycProfile {
+  id     String  @id @default(cuid())
+  caseId String  @unique
+  case   KycCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  // §2.1 Personal information (…Enc = AES-256-GCM encrypted at rest)
+  title                  String? // MR | MRS | MS
+  fullName               String?
+  dobEnc                 String?
+  nationality            String? // Country.code
+  otherNationalitiesJson String? // ["US","GB"]
+  countryOfBirth         String?
+  otherResidencyCountry  String?
+  civilIdNoEnc           String?
+  civilIdExpiry          DateTime?
+  passportNoEnc          String?
+  passportExpiry         DateTime?
+  residenceCountry       String?
+  residenceCity          String?
+  residenceAddressEnc    String?
+  mobileEnc              String?
+  telEnc                 String?
+  emailEnc               String?
+
+  // §2.2 Work details
+  employmentStatus      String? // EMPLOYEE | SELF_EMPLOYED | STUDENT | UNEMPLOYED | RETIRED
+  employer              String?
+  sector                String?
+  jobTitle              String?
+  workAddress           String?
+  workPhoneEnc          String?
+  workEmailEnc          String?
+  preferredContact      String? // WORK | PERSONAL
+  yearsOfWork           Int?
+  selfEmploymentDetails String?
+  sourcesOfIncomeJson   String? // ["SALARY","PENSION","REAL_ESTATE",...]
+  otherIncomeDetail     String?
+  annualIncomeKd        Float?
+  approxWealthKd        Float?
+
+  // §2.2b Default bank account for transfers
+  bankBeneficiaryName String?
+  bankName            String?
+  bankBranch          String?
+  bankCountry         String?
+  bankAccountNoEnc    String?
+  bankIbanEnc         String?
+  bankSwift           String?
+  bankCurrency        String?
+
+  // §3 Beneficial owner / account managed by another person
+  isManagedByOther Boolean @default(false)
+  managerType      String? // POA | GUARDIAN | OTHER
+  managerTypeOther String?
+  boName           String?
+  boNationality    String?
+  boCivilIdEnc     String?
+  boPassportEnc    String?
+  boAddressEnc     String?
+  boRelation       String?
+
+  // §4 Politically Exposed Persons
+  isPep              Boolean @default(false)
+  pepPositionsJson   String? // ["HEAD_OF_STATE","MP",...]
+  hasPepRelative     Boolean @default(false)
+  pepName            String?
+  pepRelationship    String?
+  pepPositionDetails String?
+
+  // §6 Related parties
+  isRelatedParty     Boolean @default(false)
+  relatedPartiesJson String? // [{ name, relationship, relativeRelation }]
+  hasControl         Boolean @default(false)
+  isBoardMember      Boolean @default(false)
+
+  // §1 Required documents checklist (which originals were sighted)
+  docsChecklistJson String?
+
+  // §7 Undertaking / declarations
+  declarationAccepted Boolean @default(false)
+}
+
+model CorporateProfile {
+  id     String  @id @default(cuid())
+  caseId String  @unique
+  case   KycCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  // §II Company type
+  companyType      String? // LIMITED_PARTNERSHIP | GENERAL_SHAREHOLDING | CLOSED_SHAREHOLDING | SOLE_PROPRIETORSHIP | NONPROFIT | GOVERNMENT | FINANCIAL_INSTITUTION | INVESTMENT_FUND | HOLDING_COMPANY | OTHER
+  companyTypeOther String?
+
+  // §III Company details (…Enc = AES-256-GCM encrypted at rest)
+  legalName            String?
+  incorporationDate    DateTime?
+  mainActivities       String?
+  registrationNo       String?
+  incorporationCountry String? // Country.code
+  registeredAddress    String?
+  headOfficeAddress    String?
+  businessTelEnc       String?
+  emailEnc             String?
+  taxResidenceCountry  String?
+  taxIdNumberEnc       String?
+  licenseExpiry        DateTime?
+  authorizedCapitalKd  Float?
+  paidUpCapitalKd      Float?
+  licenseNumber        String?
+
+  // Dynamic lists (JSON arrays)
+  authorizedSignatoriesJson String? // [{ name }]
+  boardOfDirectorsJson      String? // [{ name, nationality, position, representation }]
+  executiveManagementJson   String? // [{ name, nationality, position }]
+  subsidiariesJson          String? // [{ companyName, residencyCountry, registerNumber, activity, ownershipPercentage }]
+
+  // Regulatory / activity questions — feed the risk engine
+  activityIncludesSecurities           Boolean @default(false)
+  activityHighRisk                     Boolean @default(false)
+  activityHighRiskOther                String?
+  isListedOnExchange                   Boolean @default(false)
+  listedMarketName                     String?
+  isRegulatedEntity                    Boolean @default(false)
+  regulatorName                        String?
+  hasFatfDealings                      Boolean @default(false)
+  fatfDealingsDetail                   String?
+  isDirectorOrMajorShareholderOfListed Boolean @default(false)
+  listedCompanyDetails                 String?
+  hasSignificantShareholding           Boolean @default(false)
+  shareholderDetails                   String?
+
+  // §IV Communication preference
+  correspondenceMethod String? // MOBILE | EMAIL
+  reportRetention      Boolean @default(false)
+  contactPersonsJson   String? // [{ name, tel }]
+
+  // §V Financial and investment information
+  natureOfBusiness          String?
+  isRelatedParty            Boolean @default(false)
+  relatedPartyName          String?
+  relatedPartyRelationship  String?
+  annualNetIncomeKd         Float?
+  annualTurnoverKd          Float?
+  capitalKd                 Float?
+  approxWealthKd            Float?
+  sourcesOfIncomeJson       String? // ["AUTHORIZED_ACTIVITIES","INVESTMENT_INCOME","OTHER"]
+  otherIncomeDetail         String?
+  incomeSourcesUsedJson     String? // free-text list, up to 3
+  investmentPurposeJson     String? // ["CAPITAL_GROWTH","CAPITAL_PROTECTION","INCOME","LIQUIDITY","DIVERSIFICATION","RETURNS","OTHER"]
+  investmentPurposeOther    String?
+  expectedInvestmentPeriod  String? // LONG | MEDIUM | SHORT
+  expectedTransactionBand   String? // BELOW_150K | 150K_250K | 250K_500K | 500K_1M | ABOVE_1M
+  riskTolerance             String? // HIGH | MEDIUM | LOW
+  investmentExperience      String? // EXCELLENT | GOOD | LIMITED | OTHER
+  investmentExperienceOther String?
+  investmentTypesJson       String? // ["BONDS_SUKUK","REAL_ESTATE","INVESTMENT_FUNDS","SHARES"]
+  yearsOfExperience         String? // MORE_THAN_5 | ONE_TO_FIVE | LESS_THAN_1
+
+  // §VI Bank accounts (two accounts)
+  bank1Name         String?
+  bank1Country      String?
+  bank1Swift        String?
+  bank1Currency     String?
+  bank1AccountName  String?
+  bank1AccountNoEnc String?
+  bank2Name         String?
+  bank2Country      String?
+  bank2Swift        String?
+  bank2Currency     String?
+  bank2AccountName  String?
+  bank2AccountNoEnc String?
+
+  // Beneficiaries / controlling persons
+  tradesOnOwnAccount             Boolean @default(true)
+  tradesOnBehalfOfOthersDetail   String?
+  hasSignificantInterestPersons  Boolean @default(false)
+  significantInterestPersonsJson String? // [{ name }]
+  boName                         String?
+  boNationality                  String?
+  boPassportNoEnc                String?
+  boCivilIdEnc                   String?
+  boAddressEnc                   String?
+  boRelation                     String?
+  isUsResidentOrNational         Boolean @default(false)
+  hasControllingPersons          Boolean @default(false)
+  controllingPersonsJson         String? // [{ name }]
+
+  // §VII Politically Exposed Persons (25%+ shareholders/partners, signatories, managers, or 2nd-degree relatives)
+  isPep              Boolean @default(false)
+  pepPositionsJson   String?
+  pepHolderName      String?
+  pepName            String?
+  pepPositionDetails String?
+  pepRelation        String?
+
+  // §VIII Client categorization
+  clientCategory                        String? // RETAIL | PROFESSIONAL_BY_NATURE | QUALIFIED_PROFESSIONAL
+  dealsWithForeignFinancialInstitutions Boolean @default(false)
+  foreignInstitutionName                String?
+  foreignInstitutionLocation            String?
+
+  // §I Required documents checklist
+  docsChecklistJson String?
+
+  // §IX Declaration
+  declarationAccepted         Boolean @default(false)
+  authorizedSignatoryName     String?
+  authorizedSignatoryPosition String?
+}
+
+model Document {
+  id          String  @id @default(cuid())
+  caseId      String
+  case        KycCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  docType     String // CIVIL_ID | PASSPORT | SALARY_CERT | POA | COURT_ORDER | SOURCE_OF_FUNDS | OTHER
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  storagePath String // path of the AES-256-GCM encrypted blob on disk
+  sha256      String // hash of the plaintext for integrity verification
+
+  // Uploaded by staff XOR by the client via the portal — exactly one is set.
+  uploadedById       String?
+  uploadedBy         User?       @relation(fields: [uploadedById], references: [id])
+  uploadedByClientId String?
+  uploadedByClient   ClientUser? @relation("ClientDocuments", fields: [uploadedByClientId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+}
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  caseId        String?
+  case          KycCase?    @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  actorId       String?
+  actor         User?       @relation(fields: [actorId], references: [id])
+  clientActorId String?
+  clientActor   ClientUser? @relation(fields: [clientActorId], references: [id])
+  action        String // CASE_CREATED | CASE_UPDATED | CASE_SUBMITTED | RISK_OVERRIDDEN | DOC_UPLOADED | DOC_DOWNLOADED | COMPLIANCE_APPROVED | COMPLIANCE_REJECTED | COMPLIANCE_RETURNED | COMPLIANCE_ESCALATED | MANAGER_APPROVED | MANAGER_REJECTED | LOGIN_SUCCESS | LOGIN_FAILED | CLIENT_REGISTERED | CLIENT_LOGIN_SUCCESS | CLIENT_LOGIN_FAILED | CLIENT_LOGOUT | CLIENT_DOC_UPLOADED | CLIENT_SIGNED
+  fromStatus    String?
+  toStatus      String?
+  detailsJson   String?
+  ip            String?
+  createdAt     DateTime    @default(now())
+
+  @@index([caseId, createdAt])
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+}
+
+model SystemSetting {
+  key   String @id
+  value String
+}
+
+// Sanctions/PEP screening data. Only OFAC_SDN and UN_CONSOLIDATED are ever
+// populated today (real, free, no-auth public feeds) — EU/UK require a
+// registration step and PEP/Adverse Media are paid commercial feeds with no
+// free equivalent; those list sources are represented purely in
+// src/lib/screening/lists.ts as LINKING/UNAVAILABLE, not in this table.
+model SanctionedEntity {
+  id          String  @id @default(cuid())
+  fullName    String
+  aliasesJson String? // JSON string[] of alternate names
+  listSource  String // OFAC_SDN | UN_CONSOLIDATED
+  entityType  String // INDIVIDUAL | ENTITY | VESSEL
+  programs    String? // comma-separated sanctions program codes
+  nationality String?
+  dob         String? // free-text date of birth as published (formats vary by source)
+
+  @@index([listSource])
+  @@index([fullName])
+}
+
+model CaseCounter {
+  year    Int @id
+  counter Int @default(0)
+}
+
+model TransactionCounter {
+  year    Int @id
+  counter Int @default(0)
+}
+
+model InvestigationCounter {
+  year    Int @id
+  counter Int @default(0)
+}
+
+model StrCounter {
+  year    Int @id
+  counter Int @default(0)
+}
+
+// Transaction monitoring. No core-banking integration exists (or is realistic
+// to fake) — transactions are entered manually (a real, honest data-entry
+// point a compliance/front-office user could actually use) rather than a
+// pretend live feed. Every transaction is screened against all ACTIVE
+// ScreeningRule rows at creation time; matches create Alert rows.
+model Transaction {
+  id                  String   @id @default(cuid())
+  caseId              String
+  case                KycCase  @relation(fields: [caseId], references: [id])
+  txnRef              String   @unique // TXN-YYYY-NNNNN
+  type                String // CASH_DEPOSIT | CASH_WITHDRAWAL | WIRE_IN | WIRE_OUT | INTERNAL_TRANSFER
+  amountKd            Float
+  counterpartyName    String?
+  counterpartyCountry String? // Country.code
+  status              String   @default("SAFE") // SAFE | UNDER_REVIEW | BLOCKED
+  enteredById         String?
+  enteredBy           User?    @relation("TransactionEnteredBy", fields: [enteredById], references: [id])
+  createdAt           DateTime @default(now())
+
+  alerts Alert[]
+
+  @@index([caseId, createdAt])
+  @@index([createdAt])
+  @@index([type])
+}
+
+// A rule is a structured (not free-text/eval'd) definition — see
+// src/lib/transactions/rules.ts for the three supported ruleTypes and why a
+// parameterized builder was chosen over parsing an arbitrary DSL.
+model ScreeningRule {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   @default("TRANSACTIONS")
+  ruleType    String // VELOCITY_COUNT_SUM | LARGE_SINGLE_TRANSACTION | HIGH_RISK_COUNTRY
+  paramsJson  String // structured parameters, shape depends on ruleType
+  priority    String   @default("MEDIUM") // LOW | MEDIUM | HIGH | CRITICAL
+  action      String   @default("ALERT_ONLY") // ALERT_ONLY | CREATE_STR
+  status      String   @default("DRAFT") // DRAFT | ACTIVE | DISABLED
+  createdById String?
+  createdBy   User?    @relation("RuleCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  alerts Alert[]
+
+  @@index([status])
+}
+
+model Alert {
+  id            String        @id @default(cuid())
+  transactionId String
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+  ruleId        String
+  rule          ScreeningRule @relation(fields: [ruleId], references: [id])
+  severity      String // LOW | MEDIUM | HIGH | CRITICAL
+  alertType     String // STRUCTURING | LARGE_TRANSACTION | HIGH_RISK_JURISDICTION
+  status        String        @default("OPEN") // OPEN | IN_REVIEW | RESOLVED | DISMISSED
+  notes         String?
+  resolvedById  String?
+  resolvedBy    User?         @relation("AlertResolvedBy", fields: [resolvedById], references: [id])
+  resolvedAt    DateTime?
+  createdAt     DateTime      @default(now())
+
+  investigationCase InvestigationCase?
+
+  @@index([status, createdAt])
+  @@index([severity])
+}
+
+// An escalated Alert becomes a worked investigation — distinct from KycCase
+// (which is the onboarding/approval workflow for a *new* client). One Case
+// per Alert (escalation is 1:1); kycCaseId is denormalized from
+// alert.transaction.caseId at creation time since Alert has no direct FK to
+// KycCase (it's a two-hop chain through Transaction).
+model InvestigationCase {
+  id          String    @id @default(cuid())
+  caseRef     String    @unique // INV-YYYY-NNNNN
+  alertId     String    @unique
+  alert       Alert     @relation(fields: [alertId], references: [id])
+  kycCaseId   String
+  kycCase     KycCase   @relation(fields: [kycCaseId], references: [id])
+  status      String    @default("NEW") // NEW | INVESTIGATING | AWAITING_APPROVAL | CLOSED
+  findings    String?
+  openedById  String?
+  openedBy    User?     @relation("InvestigationOpenedBy", fields: [openedById], references: [id])
+  closedById  String?
+  closedBy    User?     @relation("InvestigationClosedBy", fields: [closedById], references: [id])
+  closedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  strReports StrReport[]
+
+  @@index([status])
+}
+
+// Suspicious Transaction Report filed with the FIU. Creatable standalone
+// (against a client directly) or from within an investigation — the
+// reference platform's own "+ New STR Report" button implies both paths.
+model StrReport {
+  id                  String    @id @default(cuid())
+  reportRef           String    @unique // STR-YYYY-NNNNN
+  kycCaseId           String
+  kycCase             KycCase   @relation(fields: [kycCaseId], references: [id])
+  investigationCaseId String?
+  investigationCase   InvestigationCase? @relation(fields: [investigationCaseId], references: [id])
+  status              String    @default("IN_PREPARATION") // IN_PREPARATION | UNDER_REVIEW | SUBMITTED
+  narrative           String?
+  preparedById        String?
+  preparedBy          User?     @relation("StrPreparedBy", fields: [preparedById], references: [id])
+  submittedAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([status])
+}
