@@ -7,6 +7,7 @@ import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDateTime } from '@/lib/utils';
 import { RecordTransactionDialog } from './record-transaction-dialog';
+import { ImportTransactionsDialog } from './import-transactions-dialog';
 import { AutoRefresh } from './auto-refresh';
 import type { TransactionStatus } from '@/lib/constants';
 
@@ -38,7 +39,10 @@ export default async function TransactionsPage() {
           </div>
           <p className="mt-1 text-sm text-muted">{dict.transactions.subtitle}</p>
         </div>
-        <RecordTransactionDialog cases={cases} countries={countries} />
+        <div className="flex gap-2">
+          <ImportTransactionsDialog />
+          <RecordTransactionDialog cases={cases} countries={countries} />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

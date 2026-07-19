@@ -5,7 +5,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { logAudit } from '@/lib/audit';
-import { evaluateRule, DEFAULT_ALERT_TYPE, type RuleParams, type VelocityCountSumParams, type LargeSingleTransactionParams, type HighRiskCountryParams } from './rules';
+import { evaluateRule, DEFAULT_ALERT_TYPE, type RuleParams, type VelocityCountSumParams, type LargeSingleTransactionParams, type HighRiskCountryParams, type TxnLike } from './rules';
+import { parseTransactionImportCsv, type TransactionImportRowError } from './csv';
 import {
   TRANSACTION_TYPES,
   RULE_TYPES,
@@ -136,6 +137,171 @@ export async function recordTransaction(
   revalidatePath('/transactions');
   revalidatePath('/alerts');
   return { ok: true, alertCount };
+}
+
+// ---------- batch import (CSV) — same screening pipeline as manual entry ----------
+//
+// Whichever real integration the client eventually wants (a live API against
+// their core-banking system, or a scheduled file drop), the ingestion logic
+// underneath doesn't change: every row still has to pass through the exact
+// same evaluateRule() pipeline as a manually-recorded transaction, so alerts
+// emerge identically regardless of how the data arrived. This is that
+// pipeline wired up to a file upload instead of a form.
+
+export interface ImportTransactionsState {
+  ok?: boolean;
+  error?: 'invalidFile' | 'headerError';
+  imported?: number;
+  alertCount?: number;
+  skipped?: { lineNumber: number; reason: string }[];
+}
+
+export async function importTransactionsBatch(
+  _prev: ImportTransactionsState,
+  formData: FormData,
+): Promise<ImportTransactionsState> {
+  const session = await requireSession(['FRONT_OFFICE', 'COMPLIANCE_OFFICER', 'ADMIN']);
+  const file = formData.get('file');
+  if (!(file instanceof File) || file.size === 0) return { error: 'invalidFile' };
+
+  const text = await file.text();
+  const parsed = parseTransactionImportCsv(text);
+  if (parsed.headerError) return { error: 'headerError' };
+
+  const skipped: { lineNumber: number; reason: string }[] = parsed.errors.map((e: TransactionImportRowError) => ({
+    lineNumber: e.lineNumber,
+    reason: e.reason,
+  }));
+
+  const caseNumbers = [...new Set(parsed.rows.map((r) => r.caseNumber))];
+  const cases = await prisma.kycCase.findMany({
+    where: { caseNumber: { in: caseNumbers } },
+    select: { id: true, caseNumber: true, status: true },
+  });
+  const caseByNumber = new Map(cases.map((c) => [c.caseNumber, c]));
+
+  const byCase = new Map<string, (typeof parsed.rows)>();
+  for (const row of parsed.rows) {
+    const kase = caseByNumber.get(row.caseNumber);
+    if (!kase) {
+      skipped.push({ lineNumber: row.lineNumber, reason: 'caseNotFound' });
+      continue;
+    }
+    if (kase.status !== 'APPROVED') {
+      skipped.push({ lineNumber: row.lineNumber, reason: 'caseNotApproved' });
+      continue;
+    }
+    const list = byCase.get(kase.id) ?? [];
+    list.push(row);
+    byCase.set(kase.id, list);
+  }
+
+  const [activeRules, countries] = await Promise.all([
+    prisma.screeningRule.findMany({ where: { status: 'ACTIVE' } }),
+    prisma.country.findMany({ select: { code: true, fatfStatus: true } }),
+  ]);
+  const fatfByCode = new Map(countries.map((c) => [c.code, c.fatfStatus as FatfStatus]));
+
+  let imported = 0;
+  let alertCount = 0;
+
+  for (const [caseId, rowsForCase] of byCase) {
+    // Chronological order matters: velocity/structuring rules read "prior
+    // transactions", so rows must be evaluated oldest-first, same as if
+    // they'd been entered one at a time in that order.
+    const chronological = [...rowsForCase].sort(
+      (a, b) => (a.transactionDate?.getTime() ?? 0) - (b.transactionDate?.getTime() ?? 0),
+    );
+
+    const existing = await prisma.transaction.findMany({
+      where: { caseId },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+    const priorTxns: TxnLike[] = existing.map((t) => ({
+      type: t.type,
+      amountKd: t.amountKd,
+      counterpartyCountry: t.counterpartyCountry,
+      createdAt: t.createdAt,
+    }));
+
+    for (const row of chronological) {
+      const createdAt = row.transactionDate ?? new Date();
+      const txnRef = await nextTxnRef();
+      const txnLike: TxnLike = {
+        type: row.type,
+        amountKd: row.amountKd,
+        counterpartyCountry: row.counterpartyCountry,
+        createdAt,
+      };
+
+      const matchedRules: (typeof activeRules)[number][] = [];
+      for (const rule of activeRules) {
+        const ruleType = rule.ruleType as 'VELOCITY_COUNT_SUM' | 'LARGE_SINGLE_TRANSACTION' | 'HIGH_RISK_COUNTRY';
+        const params = JSON.parse(rule.paramsJson) as RuleParams;
+        const result = evaluateRule(ruleType, params, {
+          transaction: txnLike,
+          priorTransactions: priorTxns,
+          fatfByCode,
+        });
+        if (result.matched) matchedRules.push(rule);
+      }
+
+      const txn = await prisma.transaction.create({
+        data: {
+          caseId,
+          txnRef,
+          type: row.type,
+          amountKd: row.amountKd,
+          counterpartyName: row.counterpartyName,
+          counterpartyCountry: row.counterpartyCountry,
+          status: matchedRules.length > 0 ? 'UNDER_REVIEW' : 'SAFE',
+          enteredById: session.userId,
+          createdAt,
+        },
+      });
+
+      for (const rule of matchedRules) {
+        const ruleType = rule.ruleType as 'VELOCITY_COUNT_SUM' | 'LARGE_SINGLE_TRANSACTION' | 'HIGH_RISK_COUNTRY';
+        await prisma.alert.create({
+          data: {
+            transactionId: txn.id,
+            ruleId: rule.id,
+            severity: rule.priority,
+            alertType: DEFAULT_ALERT_TYPE[ruleType],
+            createdAt,
+          },
+        });
+        alertCount++;
+        await logAudit({
+          action: 'ALERT_CREATED',
+          caseId,
+          actorId: session.userId,
+          details: { ruleId: rule.id, transactionId: txn.id, txnRef, source: 'batchImport' },
+        });
+      }
+
+      await logAudit({
+        action: 'TRANSACTION_RECORDED',
+        actorId: session.userId,
+        caseId,
+        details: { txnRef, amountKd: row.amountKd, type: row.type, alertCount: matchedRules.length, source: 'batchImport' },
+      });
+
+      imported++;
+      priorTxns.unshift(txnLike);
+    }
+  }
+
+  await logAudit({
+    action: 'TRANSACTION_BATCH_IMPORTED',
+    actorId: session.userId,
+    details: { fileName: file.name, imported, skipped: skipped.length, alertCount },
+  });
+
+  revalidatePath('/transactions');
+  revalidatePath('/alerts');
+  return { ok: true, imported, alertCount, skipped };
 }
 
 // ---------- screening rules ----------

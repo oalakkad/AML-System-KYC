@@ -2,6 +2,35 @@
 
 Every change to this project is recorded here (newest first). Read this file at the start of each session.
 
+## 2026-07-19 — Batch transaction import (CSV), for client-facing showcasing
+
+The manager wants to show the platform to actual clients and raised the real question of how a
+client's transactions would get into the system — API integration with their core-banking system, or
+batch file drops. That's genuinely their/the client's IT team's call, not one this session could answer
+for them — but batch import is buildable and honest *right now* (a live API needs a real external
+system to call, which doesn't exist), so built that as the concrete answer.
+
+- **New `src/lib/transactions/csv.ts`**: a hand-rolled, dependency-free CSV parser (quoted fields, `""`
+  escaping, CRLF/LF, BOM-stripping) plus a transaction-import-specific validator, matching this
+  codebase's established style for pure/unit-tested engines (`iban.ts`, `risk/engine.ts`,
+  `screening/similarity.ts`, `transactions/rules.ts`). 14 new Vitest tests.
+- **New `importTransactionsBatch` action** (`src/lib/transactions/actions.ts`): resolves each row's
+  `caseNumber` to an approved `KycCase`, then runs every row through **the exact same `evaluateRule()`
+  pipeline** manual entry uses — in chronological order per case, seeded with that case's real prior
+  transaction history — so a batch-imported transaction and a manually-recorded one are screened
+  identically and structuring/velocity detection works correctly across a historical batch. Invalid
+  rows (bad case number, unapproved client, invalid type/amount/date) are skipped individually with a
+  reason, not a whole-file rejection.
+- **New "Import CSV" dialog** on `/transactions`, next to "Record Transaction": downloadable CSV
+  template, file upload, and a results summary (rows imported, alerts triggered, skipped rows with
+  reasons).
+- New `TRANSACTION_BATCH_IMPORTED` audit action (plus the usual per-row `TRANSACTION_RECORDED`/
+  `ALERT_CREATED` entries, tagged `source: batchImport` in their details for traceability).
+- Verified: `tsc` clean, 117/117 tests pass (was 103), `next build` succeeds, and a DB-level simulation
+  against a real approved case confirmed structuring and large-transaction detection both fire
+  correctly on imported historical rows, invalid rows are correctly skipped, and unrelated case numbers
+  are correctly rejected.
+
 ## 2026-07-16 — Manager feedback: interactive KPI cards, branding, and a test-flakiness fix
 
 Feedback from the manager's first live walkthrough (via the user): make the dashboard KPI cards

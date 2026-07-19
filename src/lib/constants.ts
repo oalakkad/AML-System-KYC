@@ -235,6 +235,7 @@ export const AUDIT_ACTIONS = [
   'BRANDING_UPDATED',
   'LOGO_UPLOADED',
   'LOGO_REMOVED',
+  'TRANSACTION_BATCH_IMPORTED',
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
