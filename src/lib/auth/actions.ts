@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { logAudit } from '@/lib/audit';
 import { rateLimit, clearRateLimit } from '@/lib/rate-limit';
-import { createSessionToken, SESSION_COOKIE, SESSION_HOURS } from './session';
+import { createSessionToken, SESSION_COOKIE, SESSION_HOURS, SECURE_COOKIES } from './session';
 import type { Role } from '@/lib/constants';
 
 const loginSchema = z.object({
@@ -60,7 +60,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   store.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: SECURE_COOKIES,
     path: '/',
     maxAge: SESSION_HOURS * 60 * 60,
   });

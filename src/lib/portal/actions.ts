@@ -28,6 +28,7 @@ import {
   CLIENT_SESSION_HOURS,
   type ClientSessionUser,
 } from '@/lib/auth/client-session';
+import { SECURE_COOKIES } from '@/lib/auth/session';
 import {
   ALLOWED_UPLOAD_MIME,
   MAX_UPLOAD_BYTES,
@@ -43,7 +44,7 @@ async function setClientSessionCookie(user: ClientSessionUser) {
   store.set(CLIENT_SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: SECURE_COOKIES,
     path: '/',
     maxAge: CLIENT_SESSION_HOURS * 60 * 60,
   });

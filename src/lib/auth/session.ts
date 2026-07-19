@@ -6,6 +6,14 @@ import type { Role } from '@/lib/constants';
 export const SESSION_COOKIE = 'aml_session';
 export const SESSION_HOURS = 8;
 
+// Cookies default to Secure (HTTPS-only) in production, since that's the
+// right default once a domain+TLS is in place. But a browser silently drops
+// a Secure cookie set over a plain-HTTP response — so a production
+// deployment with no TLS yet (e.g. an IP-only demo box) must opt out
+// explicitly via COOKIE_SECURE=false, or every session dies on the very next
+// request. Shared by both the staff session cookie and the client-portal one.
+export const SECURE_COOKIES = process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false';
+
 export interface SessionUser {
   userId: string;
   email: string;
