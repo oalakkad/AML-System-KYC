@@ -38,3 +38,22 @@ export async function getCraStats(): Promise<CraStats> {
     notYetAssessed: totalApprovedClients - totalAssessed,
   };
 }
+
+export interface CraReviewCompliance {
+  onTime: number;
+  overdue: number;
+  total: number;
+  percentOnTime: number;
+}
+
+/** Of approved, assessed clients, how many are still within their CRA review cadence. */
+export async function getCraReviewCompliance(): Promise<CraReviewCompliance> {
+  const [overdue, total] = await Promise.all([
+    prisma.kycCase.count({
+      where: { status: 'APPROVED', craBand: { not: null }, craNextReviewAt: { lt: new Date() } },
+    }),
+    prisma.kycCase.count({ where: { status: 'APPROVED', craBand: { not: null } } }),
+  ]);
+  const onTime = total - overdue;
+  return { onTime, overdue, total, percentOnTime: total > 0 ? Math.round((onTime / total) * 100) : 100 };
+}

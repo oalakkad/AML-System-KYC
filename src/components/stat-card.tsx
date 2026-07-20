@@ -28,7 +28,7 @@ export function StatCard({
 
   return (
     <div
-      className="group relative flex items-center gap-4 rounded-xl border border-hairline bg-card p-6 shadow-card transition-shadow hover:shadow-raised focus-within:shadow-raised"
+      className="group relative flex items-center gap-4 rounded-xl border border-hairline bg-card p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
       tabIndex={hasBreakdown ? 0 : undefined}
     >
       <span className={cn('flex size-14 shrink-0 items-center justify-center rounded-lg', TONE_CHIP[tone])}>
@@ -41,7 +41,7 @@ export function StatCard({
 
       {hasBreakdown && (
         <div
-          className="pointer-events-none absolute start-4 top-full z-20 mt-2 w-56 origin-top-left scale-95 rounded-lg border border-hairline bg-white p-3 opacity-0 shadow-pop transition-all duration-150 group-hover:pointer-events-auto group-hover:scale-100 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:scale-100 group-focus-within:opacity-100"
+          className="pointer-events-none absolute start-4 top-full z-20 mt-2 w-56 origin-top-left scale-95 rounded-lg border border-hairline bg-card p-3 opacity-0 shadow-pop transition-all duration-150 group-hover:pointer-events-auto group-hover:scale-100 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:scale-100 group-focus-within:opacity-100"
           role="tooltip"
         >
           {breakdownTitle && (

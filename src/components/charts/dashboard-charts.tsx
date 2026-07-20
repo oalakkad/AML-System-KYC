@@ -1,8 +1,6 @@
 'use client';
 
 // Dashboard charts — recharts, banking-palette validated colors.
-// Redesigned with premium gradient-filled area charts, sleek glassmorphic tooltips,
-// and modern visual markers.
 
 import {
   ResponsiveContainer,
@@ -20,8 +18,8 @@ import {
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import type { CaseStatus, RiskRating, AlertType } from '@/lib/constants';
 
-const AXIS_STYLE = { fontSize: 11, fill: '#94a3b8', fontWeight: 600 };
-const GRID_STROKE = '#f1f5f9';
+const AXIS_STYLE = { fontSize: 11, fill: '#9497ac', fontWeight: 600 };
+const GRID_STROKE = '#e6e7f2';
 
 const RISK_COLOR: Record<RiskRating, string> = {
   LOW: '#10b981',
@@ -57,10 +55,10 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-hairline/80 bg-white/90 backdrop-blur-md px-3.5 py-2.5 shadow-premium text-xs">
+    <div className="rounded-xl border border-hairline bg-card px-3.5 py-2.5 shadow-premium text-xs">
       <p className="font-bold text-ink mb-1.5">{labelFormatter ? labelFormatter(label ?? '') : label}</p>
       {payload.map((p, i) => (
-        <p key={i} className="flex items-center gap-2 font-semibold text-slate-500 tnum">
+        <p key={i} className="flex items-center gap-2 font-semibold text-muted tnum">
           <span className="size-2 rounded-full" style={{ backgroundColor: p.color ?? '#4f46e5' }} />
           {p.name}: <span className="font-bold text-ink ms-auto">{p.value}</span>
         </p>
@@ -106,7 +104,7 @@ export function CaseTrendChart({
               <XAxis
                 dataKey="label"
                 tick={AXIS_STYLE}
-                axisLine={{ stroke: '#e2e8f0' }}
+                axisLine={{ stroke: '#e6e7f2' }}
                 tickLine={false}
                 interval="preserveStartEnd"
               />
@@ -119,7 +117,7 @@ export function CaseTrendChart({
                 domain={[0, yMax]}
                 ticks={yTicks}
               />
-              <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#cbd5e1', strokeWidth: 1 }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#d3d5e6', strokeWidth: 1 }} />
               <Area
                 type="monotone"
                 dataKey="count"
@@ -156,9 +154,9 @@ export function RiskDistributionChart({
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 16, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
               <CartesianGrid stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+              <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e6e7f2' }} tickLine={false} />
               <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} allowDecimals={false} width={36} />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f8fafc' }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
               <Bar dataKey="count" name={title} radius={[6, 6, 0, 0]} maxBarSize={52}>
                 {chartData.map((d) => (
                   <Cell key={d.rating} fill={RISK_COLOR[d.rating]} />
@@ -213,7 +211,7 @@ export function StatusBreakdownChart({
                     tickLine={false}
                     width={110}
                   />
-                  <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f8fafc' }} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
                   <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={16}>
                     {chartData.map((d) => (
                       <Cell key={d.status} fill={STATUS_COLOR[d.status]} />
@@ -225,7 +223,7 @@ export function StatusBreakdownChart({
             </div>
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-hairline pt-3">
               {chartData.map((d) => (
-                <span key={d.status} className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                <span key={d.status} className="flex items-center gap-1.5 text-xs font-semibold text-muted">
                   <span className="size-2 rounded-full" style={{ backgroundColor: STATUS_COLOR[d.status] }} aria-hidden />
                   {d.name}
                 </span>
@@ -265,9 +263,9 @@ export function AlertVolumeChart({
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 16, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
                 <CartesianGrid stroke={GRID_STROKE} vertical={false} />
-                <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e6e7f2' }} tickLine={false} />
                 <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} allowDecimals={false} width={36} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f8fafc' }} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
                 <Bar dataKey="count" name={title} radius={[6, 6, 0, 0]} maxBarSize={52}>
                   {chartData.map((d) => (
                     <Cell key={d.alertType} fill={ALERT_TYPE_COLOR[d.alertType]} />

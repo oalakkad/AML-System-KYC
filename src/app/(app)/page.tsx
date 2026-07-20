@@ -24,6 +24,10 @@ import { StatCard, type StatBreakdownRow } from '@/components/stat-card';
 import { StatusBadge, RiskBadge } from '@/components/status-badge';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { CaseTrendChart, RiskDistributionChart, StatusBreakdownChart } from '@/components/charts/dashboard-charts';
+import { AuditTimeline } from '@/components/kyc/audit-timeline';
+import { getRecentActivity } from '@/lib/audit';
+import { getCraReviewCompliance } from '@/lib/risk/cra-queries';
+import { interpolate } from '@/lib/i18n/interpolate';
 import { formatDate } from '@/lib/utils';
 import { CASE_STATUSES, RISK_RATINGS, type CaseStatus, type RiskRating, type Role } from '@/lib/constants';
 import type { Dict } from '@/lib/i18n/en';
@@ -163,6 +167,13 @@ export default async function DashboardPage() {
   const statusCounts = new Map(statusGroups.map((g) => [g.status, g._count.status]));
   const statusData = CASE_STATUSES.map((status) => ({ status, count: statusCounts.get(status) ?? 0 }));
 
+  // Risk-assessment access mirrors src/app/(app)/risk-assessment/page.tsx's own gate —
+  // front office doesn't review CRA bands, so skip these two widgets for them.
+  const seesRiskOps = session.role === 'COMPLIANCE_OFFICER' || session.role === 'SENIOR_MANAGER' || session.role === 'ADMIN';
+  const [craCompliance, recentActivity] = seesRiskOps
+    ? await Promise.all([getCraReviewCompliance(), getRecentActivity(locale)])
+    : [null, []];
+
   const cards = (() => {
     const c: {
       label: string; value: number; icon: typeof Layers;
@@ -265,6 +276,52 @@ export default async function DashboardPage() {
         <RiskDistributionChart data={riskData} title={dict.dashboard.riskDistribution} labels={dict.risk} />
         <StatusBreakdownChart data={statusData} title={dict.dashboard.statusBreakdown} labels={dict.status} />
       </div>
+
+      {seesRiskOps && craCompliance && (
+        <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
+          <Card>
+            <CardHeader title={dict.dashboard.craReviewCompliance} description={dict.dashboard.craReviewComplianceHint} />
+            <CardBody className="flex flex-col items-center">
+              <div className="relative size-32">
+                <svg width="128" height="128" viewBox="0 0 128 128" className="-rotate-90">
+                  <circle cx="64" cy="64" r="54" fill="none" stroke="var(--color-bg)" strokeWidth="11" />
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="54"
+                    fill="none"
+                    stroke={craCompliance.percentOnTime >= 80 ? '#0f9d6d' : craCompliance.percentOnTime >= 50 ? '#c77d0a' : '#dc3545'}
+                    strokeWidth="11"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 54}
+                    strokeDashoffset={2 * Math.PI * 54 * (1 - craCompliance.percentOnTime / 100)}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <p className="text-2xl font-black tnum text-ink">{craCompliance.percentOnTime}%</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-faint">{dict.dashboard.onTime}</p>
+                </div>
+              </div>
+              <p className="mt-3.5 text-center text-xs font-semibold text-muted">
+                {craCompliance.total === 0
+                  ? dict.dashboard.craNoneAssessed
+                  : interpolate(dict.dashboard.craOverdueCaption, { count: craCompliance.overdue })}
+              </p>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardHeader title={dict.dashboard.recentActivity} description={dict.dashboard.recentActivityHint} />
+            <CardBody>
+              {recentActivity.length === 0 ? (
+                <p className="py-4 text-center text-sm text-muted">{dict.dashboard.noRecentActivity}</p>
+              ) : (
+                <AuditTimeline entries={recentActivity} />
+              )}
+            </CardBody>
+          </Card>
+        </div>
+      )}
 
       <Card>
         <CardHeader

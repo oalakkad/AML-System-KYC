@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useI18n } from '@/lib/i18n/client';
 import { formatDateTime } from '@/lib/utils';
 import type { AuditAction } from '@/lib/constants';
@@ -11,6 +12,9 @@ export interface TimelineEntry {
   actorName: string | null;
   notes: string | null;
   createdAt: string;
+  /** Set only when this timeline mixes entries from multiple cases (e.g. a dashboard-wide feed). */
+  caseRef?: string;
+  caseHref?: string;
 }
 
 const ACTION_TONE: Partial<Record<AuditAction, Tone>> = {
@@ -40,19 +44,28 @@ export function AuditTimeline({ entries }: { entries: TimelineEntry[] }) {
         return (
           <li key={e.id} className="flex gap-3">
             <div className="flex flex-col items-center">
-              <span className={`mt-1 size-2.5 shrink-0 rounded-full ring-4 ring-white ${dotColor}`} />
+              <span className={`mt-1 size-2.5 shrink-0 rounded-full ring-4 ring-card ${dotColor}`} />
               <span className="mt-1 w-px flex-1 bg-hairline" />
             </div>
             <div className="pb-1">
-              <p className="text-sm font-medium text-slate-800">
+              <p className="text-sm font-medium text-ink">
                 {dict.audit[e.action] ?? e.action}
+                {e.caseRef && (
+                  e.caseHref ? (
+                    <Link href={e.caseHref} className="ms-1.5 font-semibold text-primary hover:underline">
+                      {e.caseRef}
+                    </Link>
+                  ) : (
+                    <span className="ms-1.5 font-semibold text-muted">{e.caseRef}</span>
+                  )
+                )}
               </p>
               <p className="text-xs text-faint">
                 {e.actorName && <span>{e.actorName} · </span>}
                 {formatDateTime(e.createdAt, locale)}
               </p>
               {e.notes && (
-                <p className="mt-1 rounded-md bg-subtle px-2 py-1 text-xs text-slate-600">{e.notes}</p>
+                <p className="mt-1 rounded-md bg-subtle px-2 py-1 text-xs text-muted">{e.notes}</p>
               )}
             </div>
           </li>
