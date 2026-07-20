@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Field } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
+import { FileInput } from '@/components/ui/file-input';
 import {
   updateBranding,
   resetBranding,
@@ -214,13 +215,12 @@ export function BrandingPanel({
                 <p className="mb-2 text-sm text-muted">{dict.settings.branding.logoNone}</p>
               )}
               <form action={logoAction} className="flex flex-wrap items-center gap-2">
-                <input
+                <FileInput
                   ref={fileInputRef}
-                  type="file"
                   name="logo"
                   accept="image/png,image/jpeg,image/webp,image/svg+xml"
                   onChange={onFileChange}
-                  className="max-w-full text-sm text-muted file:me-3 file:rounded-md file:border-0 file:bg-subtle file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink hover:file:bg-hairline"
+                  className="max-w-full"
                 />
                 <Button type="submit" size="sm" loading={logoPending}>
                   <Upload className="size-4" aria-hidden />

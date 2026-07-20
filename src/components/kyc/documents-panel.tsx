@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n/client';
 import { uploadDocument, deleteDocument } from '@/lib/cases/actions';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/input';
+import { FileInput } from '@/components/ui/file-input';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { DOC_TYPES, type DocType, MAX_UPLOAD_BYTES, ALLOWED_UPLOAD_MIME } from '@/lib/constants';
@@ -137,11 +138,10 @@ export function DocumentsPanel({
               ))}
             </Select>
           )}
-          <input
+          <FileInput
             ref={fileRef}
-            type="file"
             accept=".pdf,.jpg,.jpeg,.png,.webp"
-            className="flex-1 cursor-pointer text-sm text-muted file:me-3 file:cursor-pointer file:rounded-md file:border file:border-hairline-strong file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700"
+            className="flex-1"
             aria-label={dict.fields.attachDocument}
           />
           <Button type="button" variant="secondary" size="sm" onClick={handleUpload} loading={pending}>

@@ -4,8 +4,8 @@ import { useState, useTransition } from 'react';
 import { useI18n } from '@/lib/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Field } from '@/components/ui/field';
-import { cn } from '@/lib/utils';
+import { Field, Label } from '@/components/ui/field';
+import { SelectableCard } from '@/components/ui/selectable-card';
 import { FilePlus2, RefreshCcw, User, Building2 } from 'lucide-react';
 import type { ClientType } from '@/lib/constants';
 
@@ -30,10 +30,7 @@ export function NewCaseForm({
       <input type="hidden" name="formType" value={formType} />
 
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-slate-700">
-          {dict.clientType.label}
-          <span className="ms-1 text-red-500" aria-hidden>*</span>
-        </span>
+        <Label required>{dict.clientType.label}</Label>
         <div className="grid grid-cols-2 gap-3">
           {(
             [
@@ -41,30 +38,19 @@ export function NewCaseForm({
               { value: 'CORPORATE', icon: Building2 },
             ] as const
           ).map(({ value, icon: Icon }) => (
-            <button
+            <SelectableCard
               key={value}
-              type="button"
+              selected={clientType === value}
+              icon={Icon}
+              label={dict.clientType[value]}
               onClick={() => setClientType(value)}
-              aria-pressed={clientType === value}
-              className={cn(
-                'flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-4 text-sm font-medium transition-all',
-                clientType === value
-                  ? 'border-primary/40 bg-primary-soft text-primary shadow-sm'
-                  : 'border-hairline bg-white text-muted hover:border-hairline-strong hover:text-ink',
-              )}
-            >
-              <Icon className="size-6" aria-hidden />
-              {dict.clientType[value]}
-            </button>
+            />
           ))}
         </div>
       </div>
 
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-slate-700">
-          {dict.fields.formType}
-          <span className="ms-1 text-red-500" aria-hidden>*</span>
-        </span>
+        <Label required>{dict.fields.formType}</Label>
         <div className="grid grid-cols-2 gap-3">
           {(
             [
@@ -72,21 +58,13 @@ export function NewCaseForm({
               { value: 'KYC_UPDATE', icon: RefreshCcw },
             ] as const
           ).map(({ value, icon: Icon }) => (
-            <button
+            <SelectableCard
               key={value}
-              type="button"
+              selected={formType === value}
+              icon={Icon}
+              label={dict.formType[value]}
               onClick={() => setFormType(value)}
-              aria-pressed={formType === value}
-              className={cn(
-                'flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-4 text-sm font-medium transition-all',
-                formType === value
-                  ? 'border-primary/40 bg-primary-soft text-primary shadow-sm'
-                  : 'border-hairline bg-white text-muted hover:border-hairline-strong hover:text-ink',
-              )}
-            >
-              <Icon className="size-6" aria-hidden />
-              {dict.formType[value]}
-            </button>
+            />
           ))}
         </div>
       </div>

@@ -7,6 +7,7 @@ import { useI18n, interpolate } from '@/lib/i18n/client';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
+import { FileInput } from '@/components/ui/file-input';
 import { importTransactionsBatch, type ImportTransactionsState } from '@/lib/transactions/actions';
 import { TRANSACTION_IMPORT_TEMPLATE } from '@/lib/transactions/csv';
 
@@ -72,13 +73,12 @@ export function ImportTransactionsDialog() {
                 </ul>
               </Alert>
             )}
-            <input
+            <FileInput
               ref={fileInputRef}
-              type="file"
               name="file"
               accept=".csv,text/csv"
               required
-              className="w-full text-sm text-muted file:me-3 file:rounded-md file:border-0 file:bg-subtle file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink hover:file:bg-hairline"
+              className="w-full"
             />
             <Button type="submit" className="w-full" loading={pending}>
               {pending ? dict.transactions.importing : dict.transactions.import}
