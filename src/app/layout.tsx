@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
-import { Montserrat, Cairo } from 'next/font/google';
+import { Inter, Cairo } from 'next/font/google';
 import { getDict } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n/client';
 import { getBrandSettings } from '@/lib/settings/queries';
 import './globals.css';
 
-// Montserrat — geometric, modern sans from Google Fonts.
-const montserrat = Montserrat({
-  variable: '--font-montserrat',
+// Inter — the standard typeface for dense admin/SaaS dashboards (Linear,
+// Vercel, GitHub); neutral and highly legible at small sizes, unlike a
+// display-oriented face like Montserrat.
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '900'],
 });
@@ -42,7 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang={locale} dir={dir} style={brandStyle}>
-      <body className={`${montserrat.variable} ${cairo.variable} min-h-dvh antialiased`}>
+      <body className={`${inter.variable} ${cairo.variable} min-h-dvh antialiased`}>
         <I18nProvider dict={dict} locale={locale}>
           {children}
         </I18nProvider>

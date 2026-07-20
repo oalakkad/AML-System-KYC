@@ -2,6 +2,28 @@
 
 Every change to this project is recorded here (newest first). Read this file at the start of each session.
 
+## 2026-07-19 — Modern SaaS retheme (Sumsub/Stripe/Linear-inspired)
+
+The manager still didn't like the design after the previous dark-sidebar/teal retheme. Rather than
+guess again, looked at real reference points the user named — Sumsub (a well-known KYC/AML SaaS) plus
+ComplyAdvantage — for what "modern compliance dashboard" actually looks like in the industry right now:
+neutral white content area, one confident accent color (blue/indigo family, not teal), Inter or an
+Inter-equivalent geometric-humanist sans-serif, generous whitespace, flat/subtly-shadowed cards, compact
+information density (not oversized text).
+
+- **Typeface**: Montserrat → **Inter**. Montserrat is a display/heading face (rounded, "branded"-feeling)
+  — wrong register for a dense data-table-heavy dashboard. Inter is the de facto standard for this exact
+  use case (Linear, Vercel, GitHub all use it) and is what Sumsub's own look reads closest to.
+- **Colors**: teal/cyan → **indigo primary (`#4f46e5`) + violet accent (`#7c3aed`)** — the blue/indigo/
+  violet family is what Sumsub, ComplyAdvantage, Stripe, and Linear all converge on, not teal. Sidebar
+  stays near-black (that part wasn't the complaint). Updated in both `globals.css`'s `@theme` defaults
+  and `BRAND_DEFAULTS` (`src/lib/constants.ts`), so Settings > Branding's reset value matches too.
+- **Base font-size: 18px → 16px.** An earlier session had deliberately bumped this for a "bigger,
+  fuller-reading UI," but next to Sumsub-style references that reads as oversized — real compliance
+  dashboards run compact/dense, not enlarged. This scales every rem-based Tailwind size down uniformly.
+- Verified: `tsc` clean, 118/118 tests pass, `next build` succeeds, confirmed via the rendered
+  `<html style>` attribute that the new indigo/violet values and Inter font are both live.
+
 ## 2026-07-19 — Open KYC case creation to every staff role
 
 Root-caused the manager's earlier "error when opening the KYC model[/modal]" complaint: creating a new

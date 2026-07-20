@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark-sidebar / teal-accent — matches the reference platform's look */
+  /* Modern SaaS look (Sumsub/Stripe/Linear-inspired) — dark sidebar, indigo/violet accent */
   --color-bg: #f8fafc;
   --color-card: #ffffff;
   --color-ink: #0f172a;           /* headings / primary text */
@@ -14,10 +14,10 @@
   /* primary/accent are admin-configurable (Settings > Branding), applied as inline
      custom-property overrides on <html> — hover/soft shades are derived via
      color-mix() so they always stay in sync with whatever the admin picks. */
-  --color-primary: #0891b2;       /* cyan-blue — buttons, links, active states */
+  --color-primary: #4f46e5;       /* indigo — buttons, links, active states */
   --color-primary-hover: color-mix(in srgb, var(--color-primary) 82%, black);
   --color-primary-soft: color-mix(in srgb, var(--color-primary) 10%, white);
-  --color-accent: #0d9488;        /* teal — brand mark + premium touches only */
+  --color-accent: #7c3aed;        /* violet — brand mark + premium touches only */
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 18%, white);
 
   --color-sidebar-from: #0f172a;  /* sidebar — near-black slate, not a blue gradient */
@@ -27,8 +27,8 @@
   --color-sidebar-border: rgba(255, 255, 255, 0.08);
 
   --color-fg: var(--color-ink); /* alias kept for component compatibility */
-  --font-sans: var(--font-montserrat), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-montserrat), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
   --shadow-raised: 0 4px 14px -4px rgb(15 23 42 / 0.10), 0 2px 6px -2px rgb(15 23 42 / 0.06);
@@ -37,9 +37,10 @@
 
 html {
   font-family: var(--font-sans);
-  /* Bumped from the 16px default so every rem-based Tailwind size (text-sm,
-     text-base, etc.) scales up uniformly — a bigger, fuller-reading UI. */
-  font-size: 18px;
+  /* Standard 16px root — modern SaaS dashboards (Stripe, Linear, Sumsub) run
+     dense and compact; the earlier 18px bump made everything feel oversized
+     next to that reference. */
+  font-size: 16px;
 }
 
 body {
