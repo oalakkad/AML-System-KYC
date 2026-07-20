@@ -28,7 +28,7 @@ export function StatCard({
 
   return (
     <div
-      className="group relative flex items-center gap-4 rounded-xl border border-hairline bg-card p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
+      className="group relative flex items-center gap-4 rounded-2xl border border-hairline bg-card p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
       tabIndex={hasBreakdown ? 0 : undefined}
     >
       <span className={cn('flex size-14 shrink-0 items-center justify-center rounded-lg', TONE_CHIP[tone])}>

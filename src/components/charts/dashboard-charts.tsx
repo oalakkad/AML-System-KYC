@@ -42,6 +42,17 @@ const ALERT_TYPE_COLOR: Record<AlertType, string> = {
   HIGH_RISK_JURISDICTION: '#8b5cf6',
 };
 
+/** Only the last (current) point gets a marker — with a soft glow — the rest of the line stays clean. */
+function LastPointDot({ cx, cy, index, dataLength }: { cx?: number; cy?: number; index?: number; dataLength: number }) {
+  if (cx === undefined || cy === undefined || index !== dataLength - 1) return null;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={4.5} fill="#7c3aed" filter="url(#trendDotGlow)" />
+      <circle cx={cx} cy={cy} r={4.5} fill="#7c3aed" stroke="#fff" strokeWidth={1.5} />
+    </g>
+  );
+}
+
 function ChartTooltip({
   active,
   payload,
@@ -96,9 +107,20 @@ export function CaseTrendChart({
             <AreaChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.16} />
+                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.18} />
                   <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0.01} />
                 </linearGradient>
+                <linearGradient id="trendLineGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="var(--color-primary)" />
+                  <stop offset="100%" stopColor="var(--color-accent)" />
+                </linearGradient>
+                <filter id="trendDotGlow" x="-200%" y="-200%" width="500%" height="500%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
               <CartesianGrid stroke={GRID_STROKE} vertical={false} />
               <XAxis
@@ -122,11 +144,11 @@ export function CaseTrendChart({
                 type="monotone"
                 dataKey="count"
                 name={totalLabel}
-                stroke="var(--color-primary)"
-                strokeWidth={2}
+                stroke="url(#trendLineGradient)"
+                strokeWidth={2.5}
                 fill="url(#trendGradient)"
-                dot={{ r: 3.5, fill: 'var(--color-primary)', strokeWidth: 0 }}
-                activeDot={{ r: 5.5, strokeWidth: 0 }}
+                dot={<LastPointDot dataLength={data.length} />}
+                activeDot={{ r: 5.5, fill: 'var(--color-accent)', strokeWidth: 1.5, stroke: '#fff' }}
               />
             </AreaChart>
           </ResponsiveContainer>

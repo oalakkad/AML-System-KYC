@@ -12,6 +12,7 @@ import {
   ShieldAlert,
   ArrowRight,
   Building2,
+  Sparkles,
 } from 'lucide-react';
 import type { Prisma } from '@prisma/client';
 import { requireSession } from '@/lib/auth/session';
@@ -22,6 +23,7 @@ import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatCard, type StatBreakdownRow } from '@/components/stat-card';
 import { StatusBadge, RiskBadge } from '@/components/status-badge';
+import { AvatarChip } from '@/components/ui/avatar-chip';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { CaseTrendChart, RiskDistributionChart, StatusBreakdownChart } from '@/components/charts/dashboard-charts';
 import { AuditTimeline } from '@/components/kyc/audit-timeline';
@@ -243,7 +245,25 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {seesRiskOps && craCompliance && craCompliance.overdue > 0 && (
+        <div className="flex items-center gap-3 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary-soft to-accent-soft p-3.5">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary shadow-sm">
+            <Sparkles className="size-4" aria-hidden />
+          </span>
+          <p className="text-sm font-semibold text-ink">
+            {interpolate(dict.dashboard.craOverdueCaption, { count: craCompliance.overdue })}
+          </p>
+          <Link href="/risk-assessment" className="ms-auto shrink-0 text-sm font-bold text-primary hover:underline">
+            {dict.dashboard.craReviewCompliance} →
+          </Link>
+        </div>
+      )}
+
+      <div className="relative grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div
+          className="pointer-events-none absolute -right-16 -top-10 -z-10 hidden size-72 rounded-full bg-accent/[0.06] blur-3xl lg:block"
+          aria-hidden
+        />
         {cards.map((c) => (
           <StatCard
             key={c.label}
@@ -302,11 +322,9 @@ export default async function DashboardPage() {
                   <p className="text-[10px] font-bold uppercase tracking-wide text-faint">{dict.dashboard.onTime}</p>
                 </div>
               </div>
-              <p className="mt-3.5 text-center text-xs font-semibold text-muted">
-                {craCompliance.total === 0
-                  ? dict.dashboard.craNoneAssessed
-                  : interpolate(dict.dashboard.craOverdueCaption, { count: craCompliance.overdue })}
-              </p>
+              {craCompliance.total === 0 && (
+                <p className="mt-3.5 text-center text-xs font-semibold text-muted">{dict.dashboard.craNoneAssessed}</p>
+              )}
             </CardBody>
           </Card>
 
@@ -369,7 +387,19 @@ export default async function DashboardPage() {
                         {c.caseNumber}
                       </Link>
                     </Td>
-                    <Td>{c.profile?.fullName || c.corporateProfile?.legalName || <span className="text-faint">—</span>}</Td>
+                    <Td>
+                      {(() => {
+                        const clientName = c.profile?.fullName || c.corporateProfile?.legalName;
+                        return clientName ? (
+                          <span className="flex items-center gap-2.5">
+                            <AvatarChip name={clientName} />
+                            {clientName}
+                          </span>
+                        ) : (
+                          <span className="text-faint">—</span>
+                        );
+                      })()}
+                    </Td>
                     <Td>
                       <RiskBadge rating={c.finalRiskRating as RiskRating | null} />
                     </Td>
