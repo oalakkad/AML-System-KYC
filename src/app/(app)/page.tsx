@@ -194,11 +194,14 @@ export default async function DashboardPage() {
 
   const quickLinks = (() => {
     const links: { href: string; label: string; icon: typeof Files; primary?: boolean }[] = [];
+    // Any staff role can open/create a new KYC (individual or corporate) —
+    // only who reviews/approves stays role-restricted.
+    links.push(
+      { href: '/cases/new', label: dict.nav.newCase, icon: FilePlus2, primary: session.role === 'FRONT_OFFICE' },
+      { href: '/cases/new?type=CORPORATE', label: dict.nav.newCorporateCase, icon: Building2 },
+    );
     if (session.role === 'FRONT_OFFICE') {
-      links.push(
-        { href: '/cases/new', label: dict.nav.newCase, icon: FilePlus2, primary: true },
-        { href: '/cases', label: dict.nav.myCases, icon: Files },
-      );
+      links.push({ href: '/cases', label: dict.nav.myCases, icon: Files });
     }
     if (session.role === 'COMPLIANCE_OFFICER' || session.role === 'ADMIN') {
       links.push({ href: '/review', label: dict.nav.reviewQueue, icon: ClipboardList, primary: session.role === 'COMPLIANCE_OFFICER' });

@@ -56,7 +56,7 @@ export async function nextCaseNumber(): Promise<string> {
 
 /** Load a case and assert the current user may still edit it. */
 async function getEditableCase(caseId: string) {
-  const session = await requireSession(['FRONT_OFFICE']);
+  const session = await requireSession();
   const kase = await prisma.kycCase.findUnique({ where: { id: caseId }, include: { profile: true } });
   if (!kase) throw new Error('Case not found');
   const isMaker = kase.makerId === session.userId;
@@ -89,7 +89,7 @@ const createSchema = z.object({
 });
 
 export async function createCase(formData: FormData): Promise<void> {
-  const session = await requireSession(['FRONT_OFFICE']);
+  const session = await requireSession();
   const parsed = createSchema.safeParse({
     clientType: formData.get('clientType') ?? 'INDIVIDUAL',
     formType: formData.get('formType'),

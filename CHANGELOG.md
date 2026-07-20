@@ -2,6 +2,37 @@
 
 Every change to this project is recorded here (newest first). Read this file at the start of each session.
 
+## 2026-07-19 — Open KYC case creation to every staff role
+
+Root-caused the manager's earlier "error when opening the KYC model[/modal]" complaint: creating a new
+Individual or Corporate KYC case was hardcoded to Front-Office-only at every layer (middleware, page,
+server action, and the workflow state machine itself) — any other role (including the Administrator
+account the manager was using) got silently redirected away, which reads as "broken" with no error
+message explaining why. The user asked directly: open case creation to all roles, individual and
+corporate both.
+
+- **`src/lib/workflow.ts`**: `ACTION_ROLES` changed from `Record<WorkflowAction, Role>` (one role per
+  action) to `Record<WorkflowAction, Role[]>` — `SUBMIT` now allows all four roles; `COMPLIANCE_APPROVE`/
+  `REJECT`/`RETURN` stay Compliance-Officer-only and `MANAGER_APPROVE`/`REJECT` stay Senior-Manager-only
+  (widening *who can create/submit* was the ask, not *who can approve*). `canEditCase()` dropped its
+  `role === 'FRONT_OFFICE'` check entirely — editing a DRAFT/RETURNED case is now gated purely on being
+  its maker, regardless of role.
+- Removed the now-redundant `/cases/new` and `/cases/[id]/edit` entries from `src/middleware.ts`'s
+  `ROLE_RULES` (any authenticated staff role passes; the maker check is the real gate) and widened the
+  matching `requireSession(['FRONT_OFFICE'])` calls in `cases/actions.ts`, `corporate-actions.ts`, and
+  the two page components to `requireSession()` (any authenticated role).
+- **Found and fixed a second, pre-existing gap while in this code**: Corporate KYC creation had no
+  reachable UI entry point at all, for any role — no nav item, no dashboard link, only the individual
+  "New Case" button existed. Added "New Corporate KYC" buttons/quick-links alongside "New Individual
+  KYC" on both the Cases list page and the Dashboard, for every role.
+- Heads-up (not implemented, flagging for awareness): there's no "can't review your own case" guard, so
+  a Compliance Officer or Admin can now create a case and also approve/reject it themselves — a real
+  maker-checker segregation gap if that matters for this deployment. Wasn't asked for here.
+- Verified: `tsc` clean, 118/118 tests pass (workflow.test.ts updated — two tests previously asserted
+  the old Front-Office-only restriction, now assert all four roles can create/edit/submit as long as
+  they're the maker), `next build` succeeds, and a live check confirmed a Compliance Officer session
+  can now reach both `/cases/new` and `/cases/new?type=CORPORATE` (previously a redirect for that role).
+
 ## 2026-07-19 — Visual retheme to match the reference platform
 
 The manager reviewed the deployed system and rejected it on sight: "It is not what we want... the

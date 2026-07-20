@@ -10,9 +10,13 @@ describe('canEditCase', () => {
     expect(canEditCase('PENDING_COMPLIANCE', 'FRONT_OFFICE', true)).toBe(false);
     expect(canEditCase('APPROVED', 'FRONT_OFFICE', true)).toBe(false);
   });
-  it('blocks non-makers and other roles', () => {
+  it('blocks non-makers', () => {
     expect(canEditCase('DRAFT', 'FRONT_OFFICE', false)).toBe(false);
-    expect(canEditCase('DRAFT', 'COMPLIANCE_OFFICER', true)).toBe(false);
+  });
+  it('lets any staff role edit their own draft — creation is open to everyone', () => {
+    expect(canEditCase('DRAFT', 'COMPLIANCE_OFFICER', true)).toBe(true);
+    expect(canEditCase('DRAFT', 'SENIOR_MANAGER', true)).toBe(true);
+    expect(canEditCase('DRAFT', 'ADMIN', true)).toBe(true);
   });
 });
 
@@ -26,8 +30,10 @@ describe('transition — submit', () => {
   it('rejects submit by a non-maker', () => {
     expect(() => transition('DRAFT', 'SUBMIT', { role: 'FRONT_OFFICE', isMaker: false })).toThrow(WorkflowError);
   });
-  it('rejects submit by the wrong role', () => {
-    expect(() => transition('DRAFT', 'SUBMIT', { role: 'COMPLIANCE_OFFICER', isMaker: true })).toThrow(WorkflowError);
+  it('allows submit by any staff role, as long as they are the maker', () => {
+    expect(transition('DRAFT', 'SUBMIT', { role: 'COMPLIANCE_OFFICER', isMaker: true })).toBe('PENDING_COMPLIANCE');
+    expect(transition('DRAFT', 'SUBMIT', { role: 'SENIOR_MANAGER', isMaker: true })).toBe('PENDING_COMPLIANCE');
+    expect(transition('DRAFT', 'SUBMIT', { role: 'ADMIN', isMaker: true })).toBe('PENDING_COMPLIANCE');
   });
 });
 

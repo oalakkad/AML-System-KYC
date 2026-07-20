@@ -6,10 +6,10 @@ import type { Role } from '@/lib/constants';
 const PUBLIC_PATHS = ['/login'];
 const PORTAL_PUBLIC_PATHS = ['/portal/login', '/portal/register'];
 
-// First matching rule wins.
+// First matching rule wins. No rule for /cases/new or /cases/[id]/edit —
+// any authenticated staff role may create/edit a KYC case; the maker check
+// inside canEditCase() (src/lib/workflow.ts) is what actually gates editing.
 const ROLE_RULES: { pattern: RegExp; roles: Role[] }[] = [
-  { pattern: /^\/cases\/new$/, roles: ['FRONT_OFFICE'] },
-  { pattern: /^\/cases\/[^/]+\/edit/, roles: ['FRONT_OFFICE'] },
   { pattern: /^\/review/, roles: ['COMPLIANCE_OFFICER', 'ADMIN'] },
   { pattern: /^\/approvals/, roles: ['SENIOR_MANAGER', 'ADMIN'] },
   { pattern: /^\/settings/, roles: ['ADMIN'] },

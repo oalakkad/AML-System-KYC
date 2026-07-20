@@ -10,7 +10,7 @@ export default async function NewCasePage({
 }: {
   searchParams: Promise<{ type?: string }>;
 }) {
-  await requireSession(['FRONT_OFFICE']);
+  await requireSession();
   const { dict } = await getDict();
   const { type } = await searchParams;
   const initialClientType: ClientType = type === 'CORPORATE' ? 'CORPORATE' : 'INDIVIDUAL';

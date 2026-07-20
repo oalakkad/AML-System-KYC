@@ -19,14 +19,20 @@ export default async function CasesPage() {
         <h1 className="text-2xl font-bold text-ink">
           {session.role === 'FRONT_OFFICE' ? dict.nav.myCases : dict.nav.allCases}
         </h1>
-        {session.role === 'FRONT_OFFICE' && (
+        <div className="flex flex-wrap gap-2">
           <Link href="/cases/new">
-            <Button size="sm">
+            <Button size="sm" variant="secondary">
               <Plus className="size-4" aria-hidden />
-              {dict.caseView.newCase}
+              {dict.nav.newCase}
             </Button>
           </Link>
-        )}
+          <Link href="/cases/new?type=CORPORATE">
+            <Button size="sm">
+              <Plus className="size-4" aria-hidden />
+              {dict.nav.newCorporateCase}
+            </Button>
+          </Link>
+        </div>
       </div>
       <CaseList cases={cases} />
     </div>

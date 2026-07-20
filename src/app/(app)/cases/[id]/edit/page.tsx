@@ -11,7 +11,7 @@ import { CorporateWizard } from '@/components/corporate/corporate-wizard';
 import type { CaseStatus, DocType } from '@/lib/constants';
 
 export default async function EditCasePage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await requireSession(['FRONT_OFFICE']);
+  const session = await requireSession();
   const { id } = await params;
   const { dict } = await getDict();
 

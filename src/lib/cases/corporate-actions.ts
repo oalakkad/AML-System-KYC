@@ -40,7 +40,7 @@ import { loadFatfContext } from './actions';
 
 /** Load a corporate case and assert the current user may still edit it. */
 async function getEditableCorporateCase(caseId: string) {
-  const session = await requireSession(['FRONT_OFFICE']);
+  const session = await requireSession();
   const kase = await prisma.kycCase.findUnique({
     where: { id: caseId },
     include: { corporateProfile: true },

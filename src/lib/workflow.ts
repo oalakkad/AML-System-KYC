@@ -2,7 +2,7 @@
 // Every transition is validated here before it is persisted; server actions
 // must go through `transition()` and never set statuses directly.
 
-import type { CaseStatus, RiskRating, Role } from '@/lib/constants';
+import { ROLES, type CaseStatus, type RiskRating, type Role } from '@/lib/constants';
 
 export type WorkflowAction =
   | 'SUBMIT'
@@ -25,13 +25,17 @@ export class WorkflowError extends Error {
   }
 }
 
-const ACTION_ROLES: Record<WorkflowAction, Role> = {
-  SUBMIT: 'FRONT_OFFICE',
-  COMPLIANCE_APPROVE: 'COMPLIANCE_OFFICER',
-  COMPLIANCE_REJECT: 'COMPLIANCE_OFFICER',
-  COMPLIANCE_RETURN: 'COMPLIANCE_OFFICER',
-  MANAGER_APPROVE: 'SENIOR_MANAGER',
-  MANAGER_REJECT: 'SENIOR_MANAGER',
+// Case creation/editing/submission is open to any staff role (the maker check
+// is what actually gates who can act on a given case); compliance and manager
+// decisions stay restricted to their respective roles — widening "who can
+// create a KYC" was the ask, not "who can approve one".
+const ACTION_ROLES: Record<WorkflowAction, Role[]> = {
+  SUBMIT: [...ROLES],
+  COMPLIANCE_APPROVE: ['COMPLIANCE_OFFICER'],
+  COMPLIANCE_REJECT: ['COMPLIANCE_OFFICER'],
+  COMPLIANCE_RETURN: ['COMPLIANCE_OFFICER'],
+  MANAGER_APPROVE: ['SENIOR_MANAGER'],
+  MANAGER_REJECT: ['SENIOR_MANAGER'],
 };
 
 export interface TransitionContext {
@@ -42,9 +46,9 @@ export interface TransitionContext {
   finalRiskRating?: RiskRating | null;
 }
 
-/** Statuses in which the maker may still edit the form. */
+/** Statuses in which the maker may still edit the form — any staff role, as long as they made it. */
 export function canEditCase(status: CaseStatus, role: Role, isMaker: boolean): boolean {
-  return role === 'FRONT_OFFICE' && isMaker && (status === 'DRAFT' || status === 'RETURNED');
+  return isMaker && (status === 'DRAFT' || status === 'RETURNED');
 }
 
 /** Compute the next status for an action, or throw WorkflowError. */
@@ -53,7 +57,7 @@ export function transition(
   action: WorkflowAction,
   ctx: TransitionContext,
 ): CaseStatus {
-  if (ctx.role !== ACTION_ROLES[action]) {
+  if (!ACTION_ROLES[action].includes(ctx.role)) {
     throw new WorkflowError(
       `Role ${ctx.role} is not allowed to perform ${action}`,
       'ROLE_NOT_ALLOWED',
