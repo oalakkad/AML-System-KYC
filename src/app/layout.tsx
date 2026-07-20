@@ -1,18 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter, Cairo } from 'next/font/google';
+import { Cairo } from 'next/font/google';
 import { getDict } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n/client';
 import { getBrandSettings } from '@/lib/settings/queries';
 import './globals.css';
 
-// Inter — the standard typeface for dense admin/SaaS dashboards (Linear,
-// Vercel, GitHub); neutral and highly legible at small sizes, unlike a
-// display-oriented face like Montserrat.
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '900'],
-});
+// Latin text uses the OS's own default UI font (system-ui stack, set in
+// globals.css) instead of a loaded webfont — matches what the approved
+// design mockups actually rendered with in preview.
 
 // Arabic companion face for RTL text
 const cairo = Cairo({
@@ -44,7 +39,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang={locale} dir={dir} style={brandStyle}>
-      <body className={`${inter.variable} ${cairo.variable} min-h-dvh antialiased`}>
+      <body className={`${cairo.variable} min-h-dvh antialiased`}>
         <I18nProvider dict={dict} locale={locale}>
           {children}
         </I18nProvider>
