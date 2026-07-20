@@ -2,6 +2,39 @@
 
 Every change to this project is recorded here (newest first). Read this file at the start of each session.
 
+## 2026-07-19 — Visual retheme to match the reference platform
+
+The manager reviewed the deployed system and rejected it on sight: "It is not what we want... the
+functionality and design is different from what we expected." The user then shared fresh screenshots of
+the reference platform (the same one at 167.172.101.3:3000 referenced throughout this project's history,
+previously inaccessible). Comparing page-by-page: every module shown in the reference already exists in
+this app (List Screening, Sanctions Lists, Risk Assessment/CRA, Transaction Monitoring, Alerts, Cases,
+STR Reports, Reports & Analytics, Screening Rules Sandbox, Settings) — the actual gap was purely visual.
+KYC-specific complaints were explicitly deferred by the user ("forget about kyc" for now).
+
+- **Retheme**: sidebar changed from a blue gradient to a near-black slate (`#0f172a` → `#020617`);
+  primary color from deep royal blue to cyan-blue (`#0891b2`); accent from restrained gold to teal
+  (`#0d9488`) — both in `globals.css`'s `@theme` defaults and `BRAND_DEFAULTS` (`src/lib/constants.ts`,
+  so Settings > Branding's "Reset to Default" now resets to this look, not the old one).
+- **Sidebar active-item highlight now uses `color-mix(in srgb, var(--color-accent) 24%, transparent)`**
+  instead of a neutral white overlay, so the active nav item reads as a teal-tinted highlight (matching
+  the reference) rather than a generic gray one.
+- **Brand mark replaced**: the gold gradient + `ShieldCheck` icon is gone, replaced with a solid teal
+  square showing an "AM" monogram (sidebar top, login page desktop + mobile) — matching the reference
+  exactly. Falls back to this whenever no custom logo has been uploaded via Settings > Branding.
+- **Brand name changed to "AML" / "COMPLIANCE PLATFORM"** (was "AML System" / "KYC Compliance") — and
+  deliberately kept identical in both `en.ts` and `ar.ts`, since the reference platform's brand mark
+  stays in Latin script even in its Arabic UI. A product/brand name isn't content that gets translated.
+- Several hardcoded `text-blue-*` utility classes in the sidebar (group labels, nav item text, collapse
+  button) were tied to the old blue-gradient theme and would have clashed against the new near-black
+  background — swapped for neutral `text-slate-*` shades.
+- Client portal (`/portal/*`) intentionally left untouched — the manager's screenshots were all
+  internal-staff-app pages; the portal wasn't part of this complaint.
+- Verified: `tsc` clean, 117/117 tests pass, confirmed via the rendered `<html style>` attribute and
+  literal "AM"/"COMPLIANCE PLATFORM" text in the served HTML that the new values are actually live
+  (no screenshot tool available in this environment — this was a curl/HTML-attribute check, not a
+  pixel-level visual diff; a real look should still be given by whoever reviews it next).
+
 ## 2026-07-19 — Batch transaction import (CSV), for client-facing showcasing
 
 The manager wants to show the platform to actual clients and raised the real question of how a

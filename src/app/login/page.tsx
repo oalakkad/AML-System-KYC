@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { ShieldCheck, Lock, FileCheck2, Globe2 } from 'lucide-react';
+import { Lock, FileCheck2, Globe2 } from 'lucide-react';
 import { getSession } from '@/lib/auth/session';
 import { getDict } from '@/lib/i18n';
 import { getBrandSettings } from '@/lib/settings/queries';
@@ -32,12 +32,12 @@ export default async function LoginPage() {
           aria-hidden
         />
         <div className="relative flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center overflow-hidden rounded-xl bg-primary text-white shadow-lg">
+          <div className="flex size-11 items-center justify-center overflow-hidden rounded-xl bg-accent text-white shadow-lg">
             {brand.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={brand.logoUrl} alt="" className="size-full object-cover" />
             ) : (
-              <ShieldCheck className="size-6" aria-hidden />
+              <span className="text-base font-black tracking-tight">AM</span>
             )}
           </div>
           <div>
@@ -69,12 +69,12 @@ export default async function LoginPage() {
       <div className="flex w-full flex-col items-center justify-center p-6 lg:w-1/2">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden">
-            <div className="mb-4 flex size-12 items-center justify-center overflow-hidden rounded-xl bg-primary text-white shadow-lg">
+            <div className="mb-4 flex size-12 items-center justify-center overflow-hidden rounded-xl bg-accent text-white shadow-lg">
               {brand.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={brand.logoUrl} alt="" className="size-full object-cover" />
               ) : (
-                <ShieldCheck className="size-7" aria-hidden />
+                <span className="text-lg font-black tracking-tight">AM</span>
               )}
             </div>
             <h1 className="text-xl font-bold text-ink">{dict.common.appName}</h1>

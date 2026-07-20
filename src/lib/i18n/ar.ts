@@ -4,8 +4,8 @@ import type { Dict } from './en';
 
 export const ar: Dict = {
   common: {
-    appName: 'نظام مكافحة غسل الأموال',
-    kycModule: 'اعرف عميلك — الامتثال',
+    appName: 'AML', // brand name stays untranslated across locales, matching the reference platform
+    kycModule: 'COMPLIANCE PLATFORM',
     language: 'English',
     logout: 'تسجيل الخروج',
     save: 'حفظ',

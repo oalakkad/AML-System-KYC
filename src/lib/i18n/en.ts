@@ -2,8 +2,8 @@
 
 export const en = {
   common: {
-    appName: 'AML System',
-    kycModule: 'KYC Compliance',
+    appName: 'AML',
+    kycModule: 'COMPLIANCE PLATFORM',
     language: 'العربية',
     logout: 'Log out',
     save: 'Save',

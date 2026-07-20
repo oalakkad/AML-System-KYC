@@ -20,7 +20,6 @@ import {
   PanelLeftOpen,
   Search,
   Settings,
-  ShieldCheck,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
@@ -191,25 +190,25 @@ export function AppShell({
           collapsed && !mobile && 'justify-center px-0',
         )}
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-[#7a4c0f] text-white shadow-sm">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-white shadow-sm">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt="" className="size-full rounded-lg object-cover" />
           ) : (
-            <ShieldCheck className="size-6" aria-hidden />
+            <span className="text-sm font-black tracking-tight">AM</span>
           )}
         </div>
         {(!collapsed || mobile) && (
           <div className="min-w-0">
             <p className="truncate text-lg font-bold text-white">{dict.common.appName}</p>
-            <p className="truncate text-sm text-blue-200/80">{dict.common.kycModule}</p>
+            <p className="truncate text-xs font-semibold uppercase tracking-wide text-slate-400">{dict.common.kycModule}</p>
           </div>
         )}
         {mobile && (
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="ms-auto rounded-md p-1.5 text-blue-200 hover:bg-white/10 hover:text-white"
+            className="ms-auto rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
             aria-label={dict.common.close}
           >
             <X className="size-5" aria-hidden />
@@ -222,7 +221,7 @@ export function AppShell({
         {groups.map((group) => (
           <div key={group.label}>
             {(!collapsed || mobile) && (
-              <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-blue-300/70">
+              <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-slate-500">
                 {group.label}
               </p>
             )}
@@ -238,8 +237,8 @@ export function AppShell({
                         'group relative flex items-center gap-3 rounded-lg px-3 py-3 text-base font-semibold transition-colors',
                         collapsed && !mobile && 'justify-center px-0',
                         active
-                          ? 'bg-sidebar-active text-white'
-                          : 'text-blue-100/80 hover:bg-sidebar-hover hover:text-white',
+                          ? 'bg-sidebar-active text-accent'
+                          : 'text-slate-300 hover:bg-sidebar-hover hover:text-white',
                       )}
                     >
                       {active && (
@@ -262,7 +261,7 @@ export function AppShell({
             type="button"
             onClick={toggleCollapse}
             className={cn(
-              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-blue-200/80 transition-colors hover:bg-sidebar-hover hover:text-white',
+              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-400 transition-colors hover:bg-sidebar-hover hover:text-white',
               collapsed && 'justify-center px-0',
             )}
           >

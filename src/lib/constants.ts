@@ -252,10 +252,10 @@ export const SETTING_KEYS = {
 
 // Default brand colors (also the "Reset to Default" values in Settings > Branding).
 export const BRAND_DEFAULTS = {
-  primaryColor: '#1e3a8a',
-  accentColor: '#a16207',
-  sidebarFromColor: '#1e40af',
-  sidebarToColor: '#0b1638',
+  primaryColor: '#0891b2',
+  accentColor: '#0d9488',
+  sidebarFromColor: '#0f172a',
+  sidebarToColor: '#020617',
 } as const;
 
 // Upload constraints
