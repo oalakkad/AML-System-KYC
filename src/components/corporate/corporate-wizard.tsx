@@ -7,7 +7,7 @@ import { Check, ChevronLeft, ChevronRight, Loader2, Send } from 'lucide-react';
 import { useI18n, interpolate } from '@/lib/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
+import { WizardShell } from '@/components/wizard-shell';
 import {
   corporateFormSchema,
   CORPORATE_STEP_FIELDS,
@@ -178,48 +178,15 @@ export function CorporateWizard({
             </Alert>
           )}
 
-          <nav className="mb-6 flex items-center gap-1 overflow-x-auto pb-2" aria-label="Steps">
-            {STEPS.map((s, i) => (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => setStep(i)}
-                className="flex shrink-0 items-center gap-2"
-              >
-                <span
-                  className={cn(
-                    'flex size-7 items-center justify-center rounded-full text-xs font-semibold transition-colors',
-                    i === step
-                      ? 'bg-primary text-white shadow-sm'
-                      : i < step
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-slate-100 text-faint ring-1 ring-inset ring-hairline',
-                  )}
-                >
-                  {i < step ? <Check className="size-4" aria-hidden /> : i + 1}
-                </span>
-                <span
-                  className={cn(
-                    'hidden whitespace-nowrap text-xs font-medium sm:block',
-                    i === step ? 'text-ink' : 'text-faint',
-                  )}
-                >
-                  {c.steps[s.key]}
-                </span>
-                {i < STEPS.length - 1 && <span className="mx-1 h-px w-4 bg-hairline sm:w-6" />}
-              </button>
-            ))}
-          </nav>
-
-          <div className="rounded-xl border border-hairline bg-card p-5 shadow-card">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-ink">{c.steps[STEPS[step].key]}</h2>
-              <span className="text-xs text-faint">
-                {interpolate(dict.steps.stepOf, { current: step + 1, total: STEPS.length })}
-              </span>
-            </div>
+          <WizardShell
+            steps={STEPS.map((s) => ({ key: s.key, label: c.steps[s.key] }))}
+            currentStep={step}
+            onStepClick={setStep}
+            title={c.steps[STEPS[step].key]}
+            stepOfLabel={interpolate(dict.steps.stepOf, { current: step + 1, total: STEPS.length })}
+          >
             <Current {...stepProps} />
-          </div>
+          </WizardShell>
 
           {submitError && (
             <Alert tone="danger" className="mt-4">
