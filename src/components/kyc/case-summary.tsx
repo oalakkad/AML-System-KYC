@@ -26,7 +26,7 @@ function Row({ label, value }: DisplayField) {
   return (
     <div className="flex flex-col gap-0.5 border-b border-hairline py-2.5 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
       <dt className="text-sm text-muted">{label}</dt>
-      <dd className="text-sm font-medium text-slate-800 sm:text-end">
+      <dd className="text-sm font-medium text-ink sm:text-end">
         {value || <span className="font-normal text-faint">{dict.common.notProvided}</span>}
       </dd>
     </div>

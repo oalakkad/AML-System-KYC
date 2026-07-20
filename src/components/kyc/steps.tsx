@@ -616,7 +616,7 @@ export function StepReview({ risk, caseId, docs, onDocsChange }: StepProps) {
 
       <div className="rounded-xl border border-hairline bg-subtle p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">{dict.risk.systemRating}</span>
+          <span className="text-sm font-medium text-ink">{dict.risk.systemRating}</span>
           <RiskBadge rating={risk.rating} />
         </div>
         <p className="mt-1 text-xs text-muted">
@@ -646,7 +646,7 @@ export function StepReview({ risk, caseId, docs, onDocsChange }: StepProps) {
 
       <div className="space-y-3 rounded-xl border border-hairline bg-subtle p-4">
         <SectionTitle>{dict.fields.declarationTitle}</SectionTitle>
-        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-slate-600">
+        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-muted">
           {dict.fields.declarationText}
         </p>
         <Controller

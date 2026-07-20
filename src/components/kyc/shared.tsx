@@ -95,8 +95,8 @@ export function YesNoField({
   const { dict } = useI18n();
   return (
     <div className={cn('flex flex-col gap-2 rounded-xl border border-hairline bg-subtle p-4 sm:flex-row sm:items-center sm:justify-between', className)}>
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <div className="flex shrink-0 gap-1 rounded-lg border border-hairline-strong bg-white p-0.5" role="group">
+      <span className="text-sm font-medium text-ink">{label}</span>
+      <div className="flex shrink-0 gap-1 rounded-lg border border-hairline-strong bg-card p-0.5" role="group">
         {([true, false] as const).map((v) => (
           <button
             key={String(v)}
@@ -105,7 +105,7 @@ export function YesNoField({
             onClick={() => onChange(v)}
             className={cn(
               'cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
-              value === v ? 'bg-primary text-white shadow-sm' : 'text-muted hover:bg-slate-100 hover:text-ink',
+              value === v ? 'bg-primary text-white shadow-sm' : 'text-muted hover:bg-subtle hover:text-ink',
             )}
           >
             {v ? dict.common.yes : dict.common.no}
@@ -135,7 +135,7 @@ export function CheckboxRow({
         htmlFor={id}
         className={cn(
           'flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-sm transition-colors',
-          checked ? 'border-primary/40 bg-primary-soft' : 'border-hairline bg-white hover:border-hairline-strong hover:bg-subtle',
+          checked ? 'border-primary/40 bg-primary-soft' : 'border-hairline bg-card hover:border-hairline-strong hover:bg-subtle',
         )}
       >
         <input
@@ -143,9 +143,9 @@ export function CheckboxRow({
           type="checkbox"
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
-          className="mt-0.5 size-4 shrink-0 cursor-pointer accent-indigo-500"
+          className="mt-0.5 size-4 shrink-0 cursor-pointer accent-primary"
         />
-        <span className="text-slate-700">{label}</span>
+        <span className="text-ink">{label}</span>
       </label>
       {error && (
         <p className="mt-1 text-xs font-medium text-red-600" role="alert">

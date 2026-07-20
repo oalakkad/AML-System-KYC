@@ -58,7 +58,7 @@ export function PortalFatfDialog({
         </Alert>
 
         <div>
-          <p className="mb-1.5 text-sm font-medium text-slate-700">{dict.fatf.flaggedCountries}</p>
+          <p className="mb-1.5 text-sm font-medium text-ink">{dict.fatf.flaggedCountries}</p>
           <div className="flex flex-wrap gap-2">
             {uniqueCodes.map((code) => {
               const isBlack = flags.some((f) => f.countryCode === code && f.fatfStatus === 'BLACK');
@@ -72,7 +72,7 @@ export function PortalFatfDialog({
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">{dict.fatf.uploadNow}</p>
+          <p className="mb-2 text-sm font-medium text-ink">{dict.fatf.uploadNow}</p>
           <PortalDocumentsPanel
             caseId={caseId}
             docs={docs}

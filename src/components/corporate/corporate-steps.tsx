@@ -845,9 +845,9 @@ export function CorpStepCategorization({ risk, caseId, docs, onDocsChange }: Ste
         <DocumentsPanel caseId={caseId} docs={docs} onChange={onDocsChange} />
       </div>
 
-      <div className="rounded-xl border border-hairline bg-white p-4">
+      <div className="rounded-xl border border-hairline bg-card p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">{dict.risk.systemRating}</span>
+          <span className="text-sm font-medium text-ink">{dict.risk.systemRating}</span>
           <RiskBadge rating={risk.rating} />
         </div>
         <p className="mt-1 text-xs text-muted">
@@ -891,9 +891,9 @@ export function CorpStepCategorization({ risk, caseId, docs, onDocsChange }: Ste
         </div>
       )}
 
-      <div className="space-y-3 rounded-xl border border-hairline bg-white p-4">
+      <div className="space-y-3 rounded-xl border border-hairline bg-card p-4">
         <SectionTitle>{c.fields.declarationTitle}</SectionTitle>
-        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-slate-600">{c.fields.declarationText}</p>
+        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-muted">{c.fields.declarationText}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={c.fields.authorizedSignatoryName} error={err('authorizedSignatoryName')}>
             <Input {...register('authorizedSignatoryName')} />

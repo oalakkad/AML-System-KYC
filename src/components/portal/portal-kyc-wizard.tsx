@@ -189,7 +189,7 @@ export function PortalKycWizard({
           </Alert>
         )}
 
-        <div className="mt-6 flex items-center justify-between gap-3">
+        <div className="mt-6 flex items-center justify-between gap-3 border-t border-hairline pt-5">
           <Button type="button" variant="secondary" onClick={goPrev} disabled={step === 0}>
             <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
             {dict.common.back}

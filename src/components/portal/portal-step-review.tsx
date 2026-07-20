@@ -81,7 +81,7 @@ export function PortalStepReview({
 
       <div className="space-y-3 rounded-xl border border-hairline bg-subtle p-4">
         <SectionTitle>{dict.fields.declarationTitle}</SectionTitle>
-        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-slate-600">
+        <p className="max-h-48 overflow-y-auto text-xs leading-relaxed text-muted">
           {dict.fields.declarationText}
         </p>
         <Controller

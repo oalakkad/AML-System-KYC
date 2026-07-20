@@ -88,10 +88,10 @@ export function DocumentsPanel({
       ) : (
         <ul className="divide-y divide-hairline overflow-hidden rounded-xl border border-hairline">
           {visibleDocs.map((d) => (
-            <li key={d.id} className="flex items-center gap-3 bg-white px-3 py-2 text-sm">
+            <li key={d.id} className="flex items-center gap-3 bg-card px-3 py-2 text-sm">
               <FileText className="size-4 shrink-0 text-faint" aria-hidden />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-slate-800">{d.fileName}</p>
+                <p className="truncate font-medium text-ink">{d.fileName}</p>
                 <Badge tone={d.docType === 'SOURCE_OF_FUNDS' ? 'amber' : 'slate'} className="mt-0.5">
                   {dict.options.docType[d.docType as DocType] ?? d.docType}
                 </Badge>
