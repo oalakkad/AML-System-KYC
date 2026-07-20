@@ -45,7 +45,7 @@ export default async function AlertsPage({
           href="/alerts"
           className={cn(
             'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-            !severity ? 'border-primary/40 bg-primary-soft text-primary' : 'border-hairline bg-white text-muted hover:bg-subtle',
+            !severity ? 'border-primary/40 bg-primary-soft text-primary' : 'border-hairline bg-card text-muted hover:bg-subtle',
           )}
         >
           {dict.alerts.all} ({alertCounts.total})
@@ -56,7 +56,7 @@ export default async function AlertsPage({
             href={`/alerts?severity=${s}`}
             className={cn(
               'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-              severity === s ? 'border-primary/40 bg-primary-soft text-primary' : 'border-hairline bg-white text-muted hover:bg-subtle',
+              severity === s ? 'border-primary/40 bg-primary-soft text-primary' : 'border-hairline bg-card text-muted hover:bg-subtle',
             )}
           >
             {dict.riskAssessment.bands[s]} ({alertCounts.counts[s]})

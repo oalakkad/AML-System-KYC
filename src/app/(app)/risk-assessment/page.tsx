@@ -90,7 +90,7 @@ export default async function RiskAssessmentPage() {
           <CardBody className="space-y-2">
             {FACTOR_DISPLAY.map((f) => (
               <div key={f.labelKey} className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-slate-700">{dict.risk.factors[f.labelKey]}</span>
+                <span className="text-ink">{dict.risk.factors[f.labelKey]}</span>
                 <span className="shrink-0 font-semibold tnum text-ink">
                   +{f.points} {dict.riskAssessment.points}
                 </span>

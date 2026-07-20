@@ -50,7 +50,7 @@ function ColorField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="size-11 shrink-0 cursor-pointer rounded-md border border-hairline-strong bg-white p-1"
+          className="size-11 shrink-0 cursor-pointer rounded-md border border-hairline-strong bg-card p-1"
         />
         <Input
           name={name}

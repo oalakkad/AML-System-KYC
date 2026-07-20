@@ -209,7 +209,7 @@ export function RuleEditor() {
           </div>
 
           <div>
-            <p className="mb-1.5 text-sm font-semibold text-slate-700">{dict.screeningRules.rulePreviewTitle}</p>
+            <p className="mb-1.5 text-sm font-semibold text-ink">{dict.screeningRules.rulePreviewTitle}</p>
             <pre className="overflow-x-auto rounded-lg bg-ink p-4 text-xs leading-relaxed text-emerald-300">{preview}</pre>
             <p className="mt-1 text-xs text-faint">{dict.screeningRules.structuredNote}</p>
           </div>
