@@ -34,7 +34,7 @@ export default async function StrReportsPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink">{dict.strReports.title}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.strReports.title}</h1>
           <p className="mt-1 text-sm text-muted">{dict.strReports.subtitle}</p>
         </div>
         <NewStrDialog cases={cases} investigations={investigations} />

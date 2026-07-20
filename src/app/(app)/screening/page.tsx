@@ -11,7 +11,7 @@ export default async function ScreeningPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-ink">{dict.screening.listScreeningTitle}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.screening.listScreeningTitle}</h1>
         <p className="mt-1 text-sm text-muted">{dict.screening.listScreeningSubtitle}</p>
       </div>
       <ScreeningTool lists={lists} />

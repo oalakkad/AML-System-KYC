@@ -30,7 +30,7 @@ export default async function ReportsAnalyticsPage({
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink">{dict.reports.title}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.reports.title}</h1>
           <p className="mt-1 text-sm text-muted">{dict.reports.subtitle}</p>
         </div>
         <div className="flex items-center gap-2">

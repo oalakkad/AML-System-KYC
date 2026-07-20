@@ -232,7 +232,7 @@ export default async function DashboardPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-muted">{dict.dashboard.welcome}</p>
-          <h1 className="mt-0.5 text-2xl font-bold text-ink">{displayName}</h1>
+          <h1 className="mt-0.5 text-2xl font-extrabold tracking-tight text-ink">{displayName}</h1>
           <p className="mt-1 text-sm text-muted">{dict.roles[session.role]}</p>
         </div>
         <div className="flex flex-wrap gap-2">

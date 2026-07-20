@@ -26,7 +26,7 @@ export default async function SettingsPage({
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold text-ink">{dict.settings.title}</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.settings.title}</h1>
 
       <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
         <nav className="space-y-1" aria-label="Settings">

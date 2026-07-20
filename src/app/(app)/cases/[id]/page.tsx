@@ -113,7 +113,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-ink">{kase.caseNumber}</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight text-ink">{kase.caseNumber}</h1>
             <StatusBadge status={status} />
           </div>
           <p className="mt-1 text-sm text-muted">

@@ -36,7 +36,7 @@ export default async function TransactionsPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-ink">{dict.transactions.title}</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.transactions.title}</h1>
             <Badge tone="blue">{dict.transactions.autoRefreshing}</Badge>
           </div>
           <p className="mt-1 text-sm text-muted">{dict.transactions.subtitle}</p>

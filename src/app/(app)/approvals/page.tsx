@@ -11,7 +11,7 @@ export default async function ApprovalsQueuePage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-ink">{dict.nav.approvalQueue}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.nav.approvalQueue}</h1>
         <p className="mt-1 text-sm text-muted">{dict.status.PENDING_MANAGER}</p>
       </div>
       <CaseList cases={cases} showSubmitted />

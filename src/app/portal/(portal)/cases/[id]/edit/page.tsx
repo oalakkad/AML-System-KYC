@@ -33,7 +33,7 @@ export default async function PortalEditCasePage({ params }: { params: Promise<{
     <div>
       <div className="mb-5">
         <p className="text-sm text-muted">{dict.caseView.caseNumber}</p>
-        <h1 className="text-2xl font-bold text-ink">{kase.caseNumber}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{kase.caseNumber}</h1>
       </div>
       <PortalKycWizard
         caseId={kase.id}

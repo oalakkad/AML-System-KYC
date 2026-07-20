@@ -14,7 +14,7 @@ export default async function InvestigationsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-ink">{dict.investigations.title}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{dict.investigations.title}</h1>
         <p className="mt-1 text-sm text-muted">{dict.investigations.subtitle}</p>
       </div>
 

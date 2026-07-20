@@ -16,7 +16,7 @@ export default async function CasesPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-ink">
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">
           {session.role === 'FRONT_OFFICE' ? dict.nav.myCases : dict.nav.allCases}
         </h1>
         <div className="flex flex-wrap gap-2">

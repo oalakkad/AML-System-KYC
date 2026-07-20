@@ -57,7 +57,7 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold text-ink">{kase.caseNumber}</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight text-ink">{kase.caseNumber}</h1>
             <StatusBadge status={status} />
           </div>
           <p className="mt-1 text-sm text-muted">{displayName || dict.common.notProvided}</p>
