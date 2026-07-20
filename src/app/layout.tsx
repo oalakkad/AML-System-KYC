@@ -1,18 +1,15 @@
 import type { Metadata } from 'next';
-import { Roboto, Cairo } from 'next/font/google';
+import { Montserrat, Cairo } from 'next/font/google';
 import { getDict } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n/client';
 import { getBrandSettings } from '@/lib/settings/queries';
 import './globals.css';
 
-// Roboto — Google's own typeface (Android, Gmail, Material Design).
-// Note: Roboto ships 400/500/700/900 only (no 600/800) — components using
-// font-semibold(600)/font-extrabold(800) fall back to the nearest loaded
-// weight, which is expected and looks fine.
-const roboto = Roboto({
-  variable: '--font-roboto',
+// Montserrat — geometric, modern sans from Google Fonts.
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
   subsets: ['latin'],
-  weight: ['400', '500', '700', '900'],
+  weight: ['400', '500', '600', '700', '900'],
 });
 
 // Arabic companion face for RTL text
@@ -45,7 +42,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang={locale} dir={dir} style={brandStyle}>
-      <body className={`${roboto.variable} ${cairo.variable} min-h-dvh antialiased`}>
+      <body className={`${montserrat.variable} ${cairo.variable} min-h-dvh antialiased`}>
         <I18nProvider dict={dict} locale={locale}>
           {children}
         </I18nProvider>

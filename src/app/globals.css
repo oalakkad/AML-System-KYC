@@ -27,8 +27,8 @@
   --color-sidebar-border: rgba(255, 255, 255, 0.08);
 
   --color-fg: var(--color-ink); /* alias kept for component compatibility */
-  --font-sans: var(--font-roboto), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-roboto), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-montserrat), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-montserrat), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
   --shadow-raised: 0 4px 14px -4px rgb(15 23 42 / 0.10), 0 2px 6px -2px rgb(15 23 42 / 0.06);
