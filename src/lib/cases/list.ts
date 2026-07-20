@@ -17,6 +17,7 @@ export async function listCases(where: Prisma.KycCaseWhereInput, orderBy: Prisma
     id: c.id,
     caseNumber: c.caseNumber,
     clientName: c.profile?.fullName ?? c.corporateProfile?.legalName ?? null,
+    clientType: c.clientType as 'INDIVIDUAL' | 'CORPORATE',
     formType: c.formType,
     status: c.status as CaseStatus,
     finalRiskRating: c.finalRiskRating as RiskRating | null,
