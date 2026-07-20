@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Activity,
   BarChart3,
+  Bell,
   BellRing,
   ChevronLeft,
   FileText,
@@ -34,6 +35,11 @@ interface ShellUser {
   nameEn: string;
   nameAr: string;
   role: Role;
+}
+
+/** Cap the header bell badge so it never wraps to two lines. */
+function badgeCount(n: number): string {
+  return n > 9 ? '9+' : String(n);
 }
 
 interface NavItem {
@@ -117,10 +123,12 @@ function initials(name: string) {
 export function AppShell({
   user,
   logoUrl,
+  alertCount,
   children,
 }: {
   user: ShellUser;
   logoUrl?: string | null;
+  alertCount?: number;
   children: React.ReactNode;
 }) {
   const { dict, locale } = useI18n();
@@ -183,7 +191,7 @@ export function AppShell({
           collapsed && !mobile && 'justify-center px-0',
         )}
       >
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-lg ring-1 ring-white/10 overflow-hidden">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/25 overflow-hidden">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt="" className="size-full rounded-xl object-cover" />
@@ -193,15 +201,15 @@ export function AppShell({
         </div>
         {(!collapsed || mobile) && (
           <div className="min-w-0">
-            <p className="truncate text-base font-bold text-white tracking-tight">{dict.common.appName}</p>
-            <p className="truncate text-[10px] font-bold uppercase tracking-widest text-slate-500">{dict.common.kycModule}</p>
+            <p className="truncate text-base font-bold text-ink tracking-tight">{dict.common.appName}</p>
+            <p className="truncate text-[10px] font-bold uppercase tracking-widest text-faint">{dict.common.kycModule}</p>
           </div>
         )}
         {mobile && (
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="ms-auto rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+            className="ms-auto rounded-lg p-1.5 text-faint hover:bg-subtle hover:text-ink transition-colors"
             aria-label={dict.common.close}
           >
             <X className="size-5" aria-hidden />
@@ -214,7 +222,7 @@ export function AppShell({
         {groups.map((group) => (
           <div key={group.label}>
             {(!collapsed || mobile) && (
-              <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+              <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-faint">
                 {group.label}
               </p>
             )}
@@ -230,12 +238,15 @@ export function AppShell({
                         'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200',
                         collapsed && !mobile && 'justify-center px-0',
                         active
-                          ? 'bg-sidebar-active text-white font-bold shadow-inner'
-                          : 'text-slate-400 hover:bg-sidebar-hover hover:text-slate-100',
+                          ? 'bg-sidebar-active text-primary font-bold'
+                          : 'text-muted hover:bg-sidebar-hover hover:text-ink',
                       )}
                     >
                       {active && (
-                        <span className="absolute inset-y-2.5 start-0 w-1 rounded-full bg-primary" aria-hidden />
+                        <span
+                          className="absolute inset-y-2.5 start-0 w-1 rounded-full bg-gradient-to-b from-primary to-accent shadow-[0_0_8px_rgba(79,70,229,0.5)]"
+                          aria-hidden
+                        />
                       )}
                       <item.icon className="size-4 shrink-0 transition-transform group-hover:scale-105" aria-hidden />
                       {(!collapsed || mobile) && <span className="truncate">{item.label}</span>}
@@ -254,7 +265,7 @@ export function AppShell({
             type="button"
             onClick={toggleCollapse}
             className={cn(
-              'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-500 transition-colors hover:bg-sidebar-hover hover:text-slate-200',
+              'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-faint transition-colors hover:bg-sidebar-hover hover:text-muted',
               collapsed && 'justify-center px-0',
             )}
           >
@@ -277,7 +288,7 @@ export function AppShell({
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'sticky top-0 hidden h-dvh shrink-0 flex-col bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-raised transition-[width] duration-200 print:hidden lg:flex',
+          'sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-sidebar-border bg-gradient-to-b from-sidebar-from to-sidebar-to transition-[width] duration-200 print:hidden lg:flex',
           collapsed ? 'w-[72px]' : 'w-68',
         )}
       >
@@ -292,7 +303,7 @@ export function AppShell({
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <aside className="absolute inset-y-0 start-0 flex w-68 flex-col bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-pop animate-fade-in">
+          <aside className="absolute inset-y-0 start-0 flex w-68 flex-col border-e border-sidebar-border bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-pop animate-fade-in">
             <SidebarInner mobile />
           </aside>
         </div>
@@ -300,7 +311,7 @@ export function AppShell({
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-hairline/80 bg-white/80 backdrop-blur-md px-6 print:hidden">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-hairline bg-card px-6 print:hidden">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -317,18 +328,33 @@ export function AppShell({
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <LanguageToggle />
+
+            {alertCount !== undefined && (
+              <Link
+                href="/alerts"
+                className="relative flex size-8.5 items-center justify-center rounded-xl text-muted transition-colors hover:bg-subtle hover:text-ink"
+                aria-label={dict.nav.alerts}
+              >
+                <Bell className="size-4.5" aria-hidden />
+                {alertCount > 0 && (
+                  <span className="absolute top-1 end-1 flex size-3.5 items-center justify-center rounded-full border-2 border-card bg-red-500 text-[8px] font-bold text-white">
+                    {badgeCount(alertCount)}
+                  </span>
+                )}
+              </Link>
+            )}
 
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
                 onClick={() => setUserMenu((v) => !v)}
-                className="flex items-center gap-2 rounded-xl py-1 ps-1 pe-2 transition-all hover:bg-subtle/80 hover:shadow-sm"
+                className="flex items-center gap-2 rounded-xl py-1 ps-1 pe-2 transition-all hover:bg-subtle"
                 aria-haspopup="menu"
                 aria-expanded={userMenu}
               >
-                <span className="flex size-8.5 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-sm shadow-primary/10">
+                <span className="flex size-8.5 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-xs font-bold text-white shadow-sm shadow-primary/20">
                   {initials(displayName)}
                 </span>
                 <span className="hidden text-start sm:block">
@@ -339,8 +365,8 @@ export function AppShell({
               </button>
 
               {userMenu && (
-                <div className="absolute end-0 mt-2 w-56 overflow-hidden rounded-xl border border-hairline bg-white/95 backdrop-blur-md shadow-pop animate-scale-in">
-                  <div className="border-b border-hairline/80 px-4 py-3">
+                <div className="absolute end-0 mt-2 w-56 overflow-hidden rounded-xl border border-hairline bg-card shadow-pop animate-scale-in">
+                  <div className="border-b border-hairline px-4 py-3">
                     <p className="truncate text-sm font-bold text-ink">{displayName}</p>
                     <p className="text-xs text-muted font-medium mt-0.5">{dict.roles[user.role]}</p>
                   </div>

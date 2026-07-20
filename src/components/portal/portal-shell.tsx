@@ -21,7 +21,7 @@ export function PortalShell({
       <header className="sticky top-0 z-40 border-b border-hairline bg-card/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-5xl items-center gap-3 px-4 lg:px-6">
           <Link href="/portal" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
+            <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white shadow-sm shadow-primary/20">
               <ShieldCheck className="size-5" aria-hidden />
             </span>
             <span className="hidden sm:block">
