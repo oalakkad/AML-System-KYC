@@ -44,7 +44,7 @@
 
 html {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   scroll-behavior: smooth;
 }
 
@@ -60,8 +60,8 @@ body {
 }
 
 h1, h2, h3, .font-display {
-  letter-spacing: -0.02em;
-  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-weight: 800;
 }
 
 label, th {

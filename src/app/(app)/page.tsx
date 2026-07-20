@@ -149,6 +149,7 @@ export default async function DashboardPage() {
     ),
     count,
   }));
+  const trendCounts = trendData.map((d) => d.count);
 
   const riskCases = await prisma.kycCase.findMany({
     where: scopedWhere,
@@ -180,8 +181,9 @@ export default async function DashboardPage() {
     const c: {
       label: string; value: number; icon: typeof Layers;
       tone: 'slate' | 'blue' | 'amber' | 'red' | 'green' | 'violet'; breakdown: StatBreakdownRow[];
+      spark?: number[];
     }[] = [
-      { label: dict.dashboard.totalCases, value: stats.total, icon: Layers, tone: 'slate', breakdown: stats.breakdown.total },
+      { label: dict.dashboard.totalCases, value: stats.total, icon: Layers, tone: 'slate', breakdown: stats.breakdown.total, spark: trendCounts },
     ];
     if (session.role === 'FRONT_OFFICE') {
       c.push(
@@ -273,6 +275,7 @@ export default async function DashboardPage() {
             tone={c.tone}
             breakdown={c.breakdown}
             breakdownTitle={dict.risk.rating}
+            spark={c.spark}
           />
         ))}
       </div>

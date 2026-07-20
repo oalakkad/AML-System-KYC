@@ -8,6 +8,46 @@ export interface StatBreakdownRow {
   tone?: Tone;
 }
 
+// SVG stroke hex per tone (SVG can't use the Tailwind bg-* classes TONE_DOT gives).
+const SPARK_STROKE: Record<Tone, string> = {
+  slate: '#9497ac',
+  blue: '#2f6fed',
+  green: '#0f9d6d',
+  amber: '#c77d0a',
+  red: '#dc3545',
+  violet: '#7c3aed',
+};
+
+/** Tiny inline trend line from a series of counts (e.g. the 14-day case trend). */
+function Sparkline({ data, tone }: { data: number[]; tone: Tone }) {
+  if (data.length < 2) return null;
+  const w = 62;
+  const h = 26;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * w;
+      const y = h - 2 - ((v - min) / range) * (h - 4);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0" aria-hidden>
+      <polyline
+        points={points}
+        fill="none"
+        stroke={SPARK_STROKE[tone]}
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.9"
+      />
+    </svg>
+  );
+}
+
 export function StatCard({
   label,
   value,
@@ -15,6 +55,7 @@ export function StatCard({
   tone = 'slate',
   breakdown,
   breakdownTitle,
+  spark,
 }: {
   label: string;
   value: number | string;
@@ -23,21 +64,25 @@ export function StatCard({
   /** Shown in a hover/focus popover — a same-total decomposition of `value` (e.g. by risk rating). */
   breakdown?: StatBreakdownRow[];
   breakdownTitle?: string;
+  /** Optional real trend series rendered as a top-right sparkline. */
+  spark?: number[];
 }) {
   const hasBreakdown = breakdown && breakdown.length > 0;
 
   return (
     <div
-      className="group relative flex items-center gap-4 rounded-2xl border border-hairline bg-card p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
+      className="group relative rounded-2xl border border-hairline bg-card p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
       tabIndex={hasBreakdown ? 0 : undefined}
     >
-      <span className={cn('flex size-14 shrink-0 items-center justify-center rounded-lg', TONE_CHIP[tone])}>
-        <Icon className="size-7" aria-hidden />
-      </span>
-      <div className="min-w-0">
-        <p className="text-3xl font-black tnum text-ink">{value}</p>
-        <p className="text-base font-medium leading-snug text-muted">{label}</p>
+      <div className="flex items-start justify-between gap-2">
+        <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-lg', TONE_CHIP[tone])}>
+          <Icon className="size-4.5" aria-hidden />
+        </span>
+        {spark && <Sparkline data={spark} tone={tone} />}
       </div>
+
+      <p className="mt-4 text-[26px] font-extrabold leading-none tracking-tight tnum text-ink">{value}</p>
+      <p className="mt-1.5 text-[13px] font-semibold text-muted">{label}</p>
 
       {hasBreakdown && (
         <div
