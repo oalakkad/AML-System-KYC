@@ -15,7 +15,7 @@ export const FileInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLIn
       ref={ref}
       type="file"
       className={cn(
-        'cursor-pointer text-sm text-muted file:me-3 file:cursor-pointer file:rounded-md file:border file:border-hairline-strong file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink hover:file:bg-subtle',
+        'cursor-pointer text-sm text-muted file:me-3 file:cursor-pointer file:rounded-md file:border file:border-hairline-strong file:bg-card file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink hover:file:bg-subtle',
         className,
       )}
       {...props}

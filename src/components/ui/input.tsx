@@ -4,7 +4,7 @@ import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes, type
 import { cn } from '@/lib/utils';
 
 const base =
-  'w-full rounded-xl border border-hairline-strong bg-white px-3.5 text-sm font-semibold text-ink placeholder:font-normal placeholder:text-faint transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500/10';
+  'w-full rounded-xl border border-hairline-strong bg-card px-3.5 text-sm font-semibold text-ink placeholder:font-normal placeholder:text-faint transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500/10';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (

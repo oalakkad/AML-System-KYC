@@ -254,8 +254,8 @@ export const SETTING_KEYS = {
 export const BRAND_DEFAULTS = {
   primaryColor: '#4f46e5',
   accentColor: '#7c3aed',
-  sidebarFromColor: '#0f172a',
-  sidebarToColor: '#020617',
+  sidebarFromColor: '#ffffff',
+  sidebarToColor: '#fbfbfe',
 } as const;
 
 // Upload constraints

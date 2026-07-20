@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Modern SaaS look (Sumsub/Stripe/Linear-inspired) — dark sidebar, indigo/violet accent */
-  --color-bg: #f8fafc;
+  /* Modern SaaS look (Sumsub/Stripe/Linear-inspired) — full light theme,
+     indigo/violet accent. Every neutral leans slightly toward the accent
+     hue rather than a flat grey, per the approved design review. */
+  --color-bg: #f6f7fb;
   --color-card: #ffffff;
-  --color-ink: #0f172a;           /* headings / primary text */
-  --color-muted: #475569;         /* secondary text - slightly darker for better readability */
-  --color-faint: #94a3b8;         /* tertiary text / placeholders */
-  --color-hairline: #e2e8f0;      /* borders */
-  --color-hairline-strong: #cbd5e1;
-  --color-subtle: #f1f5f9;        /* subtle fills (hover, muted bg) */
+  --color-ink: #14162b;            /* headings / primary text */
+  --color-muted: #61637a;          /* secondary text */
+  --color-faint: #9497ac;          /* tertiary text / placeholders */
+  --color-hairline: #e6e7f2;       /* borders */
+  --color-hairline-strong: #d3d5e6;
+  --color-subtle: #fbfbfe;         /* subtle fills (hover, sidebar surface) */
 
   /* primary/accent are admin-configurable (Settings > Branding), applied as inline
      custom-property overrides on <html> — hover/soft shades are derived via
@@ -20,20 +22,22 @@
   --color-accent: #7c3aed;        /* violet — brand mark + premium touches only */
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 18%, white);
 
-  --color-sidebar-from: #090d16;  /* ultra-premium space dark, not just grey */
-  --color-sidebar-to: #03050a;
-  --color-sidebar-active: color-mix(in srgb, var(--color-primary) 20%, transparent);
-  --color-sidebar-hover: rgba(255, 255, 255, 0.05);
-  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+  /* Sidebar is a light surface, not a dark panel — same two-stop gradient
+     model stays admin-configurable, defaults are just both light now. */
+  --color-sidebar-from: #ffffff;
+  --color-sidebar-to: #fbfbfe;
+  --color-sidebar-active: color-mix(in srgb, var(--color-primary) 9%, white);
+  --color-sidebar-hover: var(--color-hairline);
+  --color-sidebar-border: var(--color-hairline);
 
   --color-fg: var(--color-ink); /* alias kept for component compatibility */
   --font-sans: var(--font-inter), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-inter), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
-  --shadow-raised: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
-  --shadow-pop: 0 20px 50px -12px rgba(15, 23, 42, 0.15), 0 8px 16px -8px rgba(15, 23, 42, 0.05);
-  --shadow-premium: 0 8px 30px rgba(0, 0, 0, 0.02), 0 2px 8px rgba(0, 0, 0, 0.01);
+  --shadow-card: 0 1px 2px rgba(20, 22, 43, 0.04);
+  --shadow-raised: 0 2px 4px rgba(20, 22, 43, 0.04), 0 16px 32px -16px rgba(79, 70, 229, 0.14);
+  --shadow-pop: 0 20px 50px -12px rgba(20, 22, 43, 0.15), 0 8px 16px -8px rgba(20, 22, 43, 0.06);
+  --shadow-premium: 0 2px 4px rgba(20, 22, 43, 0.04), 0 24px 48px -20px rgba(79, 70, 229, 0.16);
 }
 
 html {
@@ -44,6 +48,8 @@ html {
 
 body {
   background-color: var(--color-bg);
+  background-image: radial-gradient(circle at 1px 1px, rgba(20, 22, 43, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
   color: var(--color-ink);
   font-weight: 500;
   line-height: 1.55;
@@ -93,48 +99,6 @@ label, th {
 .animate-fade-in { animation: fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-fade-in-up { animation: fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale-in { animation: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-/* Custom premium classes */
-.premium-card {
-  position: relative;
-  background: var(--color-card);
-  border: 1px solid var(--color-hairline);
-  border-radius: 1rem;
-  box-shadow: var(--shadow-card);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.premium-card:hover {
-  box-shadow: var(--shadow-raised);
-  border-color: var(--color-hairline-strong);
-  transform: translateY(-2px);
-}
-
-.glass-panel {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-/* Beautiful mesh background for Auth/Login pages */
-.mesh-gradient-bg {
-  position: relative;
-  background-color: #030712;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.1) 0px, transparent 50%);
-}
-
-/* Custom premium inputs */
-.premium-input {
-  transition: all 0.15s ease-in-out;
-}
-.premium-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent);
-}
 
 /* Enhanced glow effects for status-badges */
 .badge-glow-green { box-shadow: 0 0 10px 0 rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); }

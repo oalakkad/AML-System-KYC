@@ -38,7 +38,7 @@ const riskTone = { LOW: 'green', MEDIUM: 'amber', HIGH: 'red' } as const;
 
 export function RiskBadge({ rating }: { rating: RiskRating | null | undefined }) {
   const { dict } = useI18n();
-  if (!rating) return <span className="text-slate-400">—</span>;
+  if (!rating) return <span className="text-faint">—</span>;
   return (
     <Badge tone={riskTone[rating]}>
       {rating === 'HIGH' && <AlertTriangle className="size-3" aria-hidden />}

@@ -10,7 +10,7 @@ export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>)
 }
 
 export function THead({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn('border-b border-hairline/80 bg-subtle/40 backdrop-blur-sm', className)} {...props} />;
+  return <thead className={cn('border-b border-hairline bg-subtle', className)} {...props} />;
 }
 
 export function TBody({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
@@ -18,7 +18,7 @@ export function TBody({ className, ...props }: HTMLAttributes<HTMLTableSectionEl
 }
 
 export function Tr({ className, ...props }: HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn('transition-all duration-150 hover:bg-subtle/30', className)} {...props} />;
+  return <tr className={cn('transition-colors duration-150 hover:bg-subtle', className)} {...props} />;
 }
 
 export function Th({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
@@ -31,6 +31,6 @@ export function Th({ className, ...props }: ThHTMLAttributes<HTMLTableCellElemen
 }
 
 export function Td({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn('px-5 py-3.5 text-slate-700 font-medium align-middle', className)} {...props} />;
+  return <td className={cn('px-5 py-3.5 text-ink font-medium align-middle', className)} {...props} />;
 }
 

@@ -27,7 +27,7 @@ export function SelectableCard({
         'flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-4 text-sm font-medium transition-all',
         selected
           ? 'border-primary/40 bg-primary-soft text-primary shadow-sm'
-          : 'border-hairline bg-white text-muted hover:border-hairline-strong hover:text-ink',
+          : 'border-hairline bg-card text-muted hover:border-hairline-strong hover:text-ink',
       )}
     >
       <Icon className="size-6" aria-hidden />
