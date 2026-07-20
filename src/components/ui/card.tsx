@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('rounded-xl border border-hairline bg-card shadow-card', className)}
+      className={cn('rounded-2xl border border-hairline bg-card shadow-card transition-all duration-255 hover:shadow-raised/40', className)}
       {...props}
     />
   );
@@ -22,16 +22,17 @@ export function CardHeader({
   className?: string;
 }) {
   return (
-    <div className={cn('flex items-center justify-between gap-4 border-b border-hairline px-5 py-4', className)}>
-      <div>
-        <h2 className="text-lg font-bold text-ink">{title}</h2>
-        {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
+    <div className={cn('flex items-center justify-between gap-4 border-b border-hairline px-6 py-4.5', className)}>
+      <div className="space-y-0.5">
+        <h2 className="text-base font-bold text-ink leading-tight">{title}</h2>
+        {description && <p className="text-xs text-muted font-medium">{description}</p>}
       </div>
-      {actions}
+      {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>
   );
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('px-5 py-4', className)} {...props} />;
+  return <div className={cn('px-6 py-5', className)} {...props} />;
 }
+

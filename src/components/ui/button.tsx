@@ -6,21 +6,21 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-semibold transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 active:scale-[0.99]',
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]',
   {
     variants: {
       variant: {
-        primary: 'bg-primary text-white hover:bg-primary-hover shadow-sm',
-        secondary: 'border border-hairline-strong bg-white text-ink hover:bg-subtle',
+        primary: 'bg-primary text-white hover:bg-primary-hover shadow-sm hover:shadow-md hover:shadow-primary/10',
+        secondary: 'border border-hairline-strong bg-white text-ink hover:bg-subtle hover:border-hairline-strong shadow-sm hover:shadow-md/20',
         ghost: 'text-muted hover:bg-subtle hover:text-ink',
-        success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
-        danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm',
-        warning: 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm',
+        success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm hover:shadow-md hover:shadow-emerald-600/10',
+        danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md hover:shadow-red-600/10',
+        warning: 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm hover:shadow-md hover:shadow-amber-500/10',
       },
       size: {
-        sm: 'h-9 px-3 text-sm',
-        md: 'h-11 px-4 text-base',
-        lg: 'h-12 px-6 text-lg',
+        sm: 'h-9.5 px-3.5 text-xs tracking-wide',
+        md: 'h-11 px-4.5 text-sm',
+        lg: 'h-12 px-6 text-base',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
@@ -47,3 +47,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ),
 );
 Button.displayName = 'Button';
+

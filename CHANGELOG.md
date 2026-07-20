@@ -2,6 +2,29 @@
 
 Every change to this project is recorded here (newest first). Read this file at the start of each session.
 
+## 2026-07-19 — Visual polish pass from an external design tool
+
+The user redesigned the UI locally using a separate AI design tool, then asked to review and ship it.
+Reviewed all 9 changed files (diff-by-diff) before deploying — scoped entirely to styling, no changes
+to business logic, data, auth, or server actions.
+
+- **Login page**: glassmorphic form card (`backdrop-blur`), ambient glow/mesh gradient behind the dark
+  brand panel, subtle fade/scale-in entrance animations.
+- **Sidebar/app shell**: tighter spacing, `rounded-xl`/`rounded-2xl` corners throughout (was `rounded-lg`/
+  `-xl`), refined active-nav-item state, backdrop-blur on the top header and user-menu dropdown.
+- **Base UI kit** (`button.tsx`, `card.tsx`, `badge.tsx`, `input.tsx`, `table.tsx`): larger corner radii,
+  colored hover shadows on buttons, glow-tinted status badges, focus rings on inputs instead of plain
+  outlines, backdrop-blur table headers.
+- **Dashboard charts**: the case-volume trend chart changed from a plain `Line` to a gradient-filled
+  `Area` — and its stroke color changed from a hardcoded hex to `var(--color-primary)`, so it now
+  actually follows whatever color an admin picks in Settings > Branding (previously didn't). Refined
+  tooltip (color-dot + glassmorphic background), slightly larger bar corner radii across all four charts.
+- New CSS utility classes in `globals.css`: `.premium-card`, `.glass-panel`, `.mesh-gradient-bg`,
+  `.badge-glow-*`, plus `fade-in-up`/`scale-in`/`pulse-glow` keyframes — additive, nothing removed.
+- Verified before shipping: `tsc` clean, 118/118 tests pass (untouched by this change), `next build`
+  succeeds, and a clean dev-server restart confirmed the login page, dashboard (charts), and transactions
+  page all render with no runtime errors.
+
 ## 2026-07-19 — Modern SaaS retheme (Sumsub/Stripe/Linear-inspired)
 
 The manager still didn't like the design after the previous dark-sidebar/teal retheme. Rather than

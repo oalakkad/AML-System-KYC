@@ -55,9 +55,6 @@ function navGroups(role: Role, dict: Dict): NavGroup[] {
     },
   ];
 
-  // Single combined "KYC" entry — Individual + Corporate cases are already
-  // unified in one list/queue (see listCases()); the sidebar shouldn't split
-  // them into separate links. Destination is the role's primary KYC view.
   const kycHref =
     role === 'COMPLIANCE_OFFICER' ? '/review' : role === 'SENIOR_MANAGER' ? '/approvals' : '/cases';
   groups.push({
@@ -123,7 +120,6 @@ export function AppShell({
   children,
 }: {
   user: ShellUser;
-  /** Admin-uploaded logo (Settings > Branding) — falls back to the shield mark when null. */
   logoUrl?: string | null;
   children: React.ReactNode;
 }) {
@@ -162,9 +158,6 @@ export function AppShell({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  // hrefs may carry a query string (e.g. /cases/new?type=CORPORATE) that a
-  // plain pathname comparison can't see — split it out and match separately
-  // so the two "New Case" links don't both light up on the same page.
   const parseHref = (href: string) => {
     const [path, query] = href.split('?');
     return { path, type: new URLSearchParams(query ?? '').get('type') };
@@ -186,29 +179,29 @@ export function AppShell({
       {/* Brand */}
       <div
         className={cn(
-          'flex h-16 items-center gap-3 border-b border-sidebar-border px-4',
+          'flex h-16 items-center gap-3 border-b border-sidebar-border px-6',
           collapsed && !mobile && 'justify-center px-0',
         )}
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-white shadow-sm">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-lg ring-1 ring-white/10 overflow-hidden">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logoUrl} alt="" className="size-full rounded-lg object-cover" />
+            <img src={logoUrl} alt="" className="size-full rounded-xl object-cover" />
           ) : (
-            <span className="text-sm font-black tracking-tight">AM</span>
+            <span className="text-xs font-black tracking-tight">AM</span>
           )}
         </div>
         {(!collapsed || mobile) && (
           <div className="min-w-0">
-            <p className="truncate text-lg font-bold text-white">{dict.common.appName}</p>
-            <p className="truncate text-xs font-semibold uppercase tracking-wide text-slate-400">{dict.common.kycModule}</p>
+            <p className="truncate text-base font-bold text-white tracking-tight">{dict.common.appName}</p>
+            <p className="truncate text-[10px] font-bold uppercase tracking-widest text-slate-500">{dict.common.kycModule}</p>
           </div>
         )}
         {mobile && (
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="ms-auto rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+            className="ms-auto rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
             aria-label={dict.common.close}
           >
             <X className="size-5" aria-hidden />
@@ -217,11 +210,11 @@ export function AppShell({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5" aria-label="Main">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-4 py-5" aria-label="Main">
         {groups.map((group) => (
           <div key={group.label}>
             {(!collapsed || mobile) && (
-              <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-slate-500">
+              <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
                 {group.label}
               </p>
             )}
@@ -234,17 +227,17 @@ export function AppShell({
                       href={item.href}
                       title={collapsed && !mobile ? item.label : undefined}
                       className={cn(
-                        'group relative flex items-center gap-3 rounded-lg px-3 py-3 text-base font-semibold transition-colors',
+                        'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200',
                         collapsed && !mobile && 'justify-center px-0',
                         active
-                          ? 'bg-sidebar-active text-accent'
-                          : 'text-slate-300 hover:bg-sidebar-hover hover:text-white',
+                          ? 'bg-sidebar-active text-white font-bold shadow-inner'
+                          : 'text-slate-400 hover:bg-sidebar-hover hover:text-slate-100',
                       )}
                     >
                       {active && (
-                        <span className="absolute inset-y-2 start-0 w-1 rounded-full bg-accent" aria-hidden />
+                        <span className="absolute inset-y-2.5 start-0 w-1 rounded-full bg-primary" aria-hidden />
                       )}
-                      <item.icon className="size-5 shrink-0" aria-hidden />
+                      <item.icon className="size-4 shrink-0 transition-transform group-hover:scale-105" aria-hidden />
                       {(!collapsed || mobile) && <span className="truncate">{item.label}</span>}
                     </Link>
                   </li>
@@ -256,20 +249,20 @@ export function AppShell({
       </nav>
 
       {!mobile && (
-        <div className="border-t border-sidebar-border p-3">
+        <div className="border-t border-sidebar-border p-4">
           <button
             type="button"
             onClick={toggleCollapse}
             className={cn(
-              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-400 transition-colors hover:bg-sidebar-hover hover:text-white',
+              'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-500 transition-colors hover:bg-sidebar-hover hover:text-slate-200',
               collapsed && 'justify-center px-0',
             )}
           >
             {collapsed ? (
-              <PanelLeftOpen className="size-5 rtl:rotate-180" aria-hidden />
+              <PanelLeftOpen className="size-4.5 rtl:rotate-180" aria-hidden />
             ) : (
               <>
-                <PanelLeftClose className="size-5 rtl:rotate-180" aria-hidden />
+                <PanelLeftClose className="size-4.5 rtl:rotate-180" aria-hidden />
                 <span>{dict.common.collapse}</span>
               </>
             )}
@@ -285,7 +278,7 @@ export function AppShell({
       <aside
         className={cn(
           'sticky top-0 hidden h-dvh shrink-0 flex-col bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-raised transition-[width] duration-200 print:hidden lg:flex',
-          collapsed ? 'w-[76px]' : 'w-72',
+          collapsed ? 'w-[72px]' : 'w-68',
         )}
       >
         <SidebarInner />
@@ -295,11 +288,11 @@ export function AppShell({
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <aside className="absolute inset-y-0 start-0 flex w-72 flex-col bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-pop animate-fade-in">
+          <aside className="absolute inset-y-0 start-0 flex w-68 flex-col bg-gradient-to-b from-sidebar-from to-sidebar-to shadow-pop animate-fade-in">
             <SidebarInner mobile />
           </aside>
         </div>
@@ -307,52 +300,54 @@ export function AppShell({
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline bg-card/95 px-4 backdrop-blur print:hidden lg:px-6">
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="rounded-md p-2 text-muted hover:bg-subtle hover:text-ink lg:hidden"
-            aria-label="Menu"
-          >
-            <Menu className="size-5" aria-hidden />
-          </button>
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-hairline/80 bg-white/80 backdrop-blur-md px-6 print:hidden">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="rounded-lg p-2 text-muted hover:bg-subtle hover:text-ink lg:hidden transition-colors"
+              aria-label="Menu"
+            >
+              <Menu className="size-5" aria-hidden />
+            </button>
 
-          <div className="min-w-0">
-            <p className="text-xs text-faint">{dict.common.kycModule}</p>
-            <h1 className="truncate text-sm font-semibold text-ink">{currentLabel}</h1>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted/80">{dict.common.kycModule}</p>
+              <h1 className="truncate text-sm font-bold text-ink leading-tight">{currentLabel}</h1>
+            </div>
           </div>
 
-          <div className="ms-auto flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <LanguageToggle />
 
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
                 onClick={() => setUserMenu((v) => !v)}
-                className="flex items-center gap-2 rounded-lg py-1 ps-1 pe-2 transition-colors hover:bg-subtle"
+                className="flex items-center gap-2 rounded-xl py-1 ps-1 pe-2 transition-all hover:bg-subtle/80 hover:shadow-sm"
                 aria-haspopup="menu"
                 aria-expanded={userMenu}
               >
-                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                <span className="flex size-8.5 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-sm shadow-primary/10">
                   {initials(displayName)}
                 </span>
                 <span className="hidden text-start sm:block">
-                  <span className="block max-w-32 truncate text-sm font-medium text-ink">{displayName}</span>
-                  <span className="block text-xs text-faint">{dict.roles[user.role]}</span>
+                  <span className="block max-w-32 truncate text-xs font-bold text-ink leading-tight">{displayName}</span>
+                  <span className="block text-[10px] font-semibold text-muted leading-none mt-0.5">{dict.roles[user.role]}</span>
                 </span>
-                <ChevronLeft className="hidden size-4 -rotate-90 text-faint sm:block" aria-hidden />
+                <ChevronLeft className="hidden size-4 -rotate-90 text-faint sm:block transition-transform duration-200" aria-hidden />
               </button>
 
               {userMenu && (
-                <div className="absolute end-0 mt-2 w-56 overflow-hidden rounded-lg border border-hairline bg-white shadow-pop animate-fade-in">
-                  <div className="border-b border-hairline px-4 py-3">
-                    <p className="truncate text-sm font-semibold text-ink">{displayName}</p>
-                    <p className="text-xs text-faint">{dict.roles[user.role]}</p>
+                <div className="absolute end-0 mt-2 w-56 overflow-hidden rounded-xl border border-hairline bg-white/95 backdrop-blur-md shadow-pop animate-scale-in">
+                  <div className="border-b border-hairline/80 px-4 py-3">
+                    <p className="truncate text-sm font-bold text-ink">{displayName}</p>
+                    <p className="text-xs text-muted font-medium mt-0.5">{dict.roles[user.role]}</p>
                   </div>
                   <form action={logout}>
                     <button
                       type="submit"
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
                     >
                       <LogOut className="size-4" aria-hidden />
                       {dict.common.logout}
@@ -364,10 +359,11 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto max-w-7xl animate-fade-in">{children}</div>
+        <main className="flex-1 px-6 py-6 lg:px-10 lg:py-8">
+          <div className="mx-auto max-w-7xl animate-fade-in-up">{children}</div>
         </main>
       </div>
     </div>
   );
 }
+
