@@ -5,6 +5,7 @@ import { getTotalSanctionedEntityCount, browseSanctionedEntities } from '@/lib/s
 import { Card, CardBody } from '@/components/ui/card';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
 export default async function SanctionsListsPage({
@@ -39,12 +40,12 @@ export default async function SanctionsListsPage({
       <Card>
         <CardBody>
           <form action="/sanctions-lists" method="get" className="flex gap-3">
-            <input
+            <Input
               type="text"
               name="q"
               defaultValue={query}
               placeholder={dict.screening.searchByName}
-              className="h-10 flex-1 rounded-md border border-hairline-strong bg-white px-3 text-sm"
+              className="flex-1"
               dir="ltr"
             />
             <Button type="submit" size="sm">

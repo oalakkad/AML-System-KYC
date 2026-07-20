@@ -1,3 +1,4 @@
+import { Activity, CheckCircle2, Clock, ShieldAlert } from 'lucide-react';
 import { requireSession } from '@/lib/auth/session';
 import { getDict } from '@/lib/i18n';
 import { getTransactionStats, getRecentTransactions, getApprovedCasesForTxnEntry } from '@/lib/transactions/queries';
@@ -5,6 +6,7 @@ import { getCountryOptions } from '@/lib/cases/queries';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { StatCard } from '@/components/stat-card';
 import { formatDateTime } from '@/lib/utils';
 import { RecordTransactionDialog } from './record-transaction-dialog';
 import { ImportTransactionsDialog } from './import-transactions-dialog';
@@ -45,31 +47,11 @@ export default async function TransactionsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-ink">{stats.today}</p>
-            <p className="text-xs text-muted">{dict.transactions.todayCount}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-emerald-600">{stats.safePercent}%</p>
-            <p className="text-xs text-muted">{dict.transactions.safePercent}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-amber-600">{stats.underReview}</p>
-            <p className="text-xs text-muted">{dict.transactions.underReview}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-red-600">{stats.blocked}</p>
-            <p className="text-xs text-muted">{dict.transactions.blocked}</p>
-          </CardBody>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label={dict.transactions.todayCount} value={stats.today} icon={Activity} tone="slate" />
+        <StatCard label={dict.transactions.safePercent} value={`${stats.safePercent}%`} icon={CheckCircle2} tone="green" />
+        <StatCard label={dict.transactions.underReview} value={stats.underReview} icon={Clock} tone="amber" />
+        <StatCard label={dict.transactions.blocked} value={stats.blocked} icon={ShieldAlert} tone="red" />
       </div>
 
       <Card>

@@ -12,6 +12,7 @@ import { Field } from '@/components/ui/field';
 import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import { Dialog } from '@/components/ui/dialog';
+import { StatCard } from '@/components/stat-card';
 import { createStaffUser, updateUserRole, toggleUserActive, type CreateUserState } from '@/lib/settings/actions';
 import { ROLES, type Role } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
@@ -154,19 +155,9 @@ export function UsersPanel({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {ROLES.map((r) => (
-          <Card key={r}>
-            <CardBody className="flex items-center gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
-                <ShieldCheck className="size-4.5" aria-hidden />
-              </span>
-              <div className="min-w-0">
-                <p className="text-lg font-bold tnum text-ink">{roleCounts[r]}</p>
-                <p className="truncate text-xs text-muted">{dict.roles[r]}</p>
-              </div>
-            </CardBody>
-          </Card>
+          <StatCard key={r} label={dict.roles[r]} value={roleCounts[r]} icon={ShieldCheck} tone="blue" />
         ))}
       </div>
 

@@ -1,3 +1,4 @@
+import { FileText, Clock, Eye, CheckCircle2 } from 'lucide-react';
 import { requireSession } from '@/lib/auth/session';
 import { getDict } from '@/lib/i18n';
 import { getStrStats, getRecentStrReports, getInvestigationsForStrLink } from '@/lib/str/queries';
@@ -5,6 +6,7 @@ import { getApprovedCasesForTxnEntry } from '@/lib/transactions/queries';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { StatCard } from '@/components/stat-card';
 import { formatDate } from '@/lib/utils';
 import { interpolate } from '@/lib/i18n/interpolate';
 import { NewStrDialog } from './new-str-dialog';
@@ -38,31 +40,16 @@ export default async function StrReportsPage() {
         <NewStrDialog cases={cases} investigations={investigations} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-ink">{stats.totalThisYear}</p>
-            <p className="text-xs text-muted">{interpolate(dict.strReports.totalThisYear, { year: new Date().getFullYear() })}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-slate-600">{stats.inPreparation}</p>
-            <p className="text-xs text-muted">{dict.strReports.inPreparation}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-amber-600">{stats.underReview}</p>
-            <p className="text-xs text-muted">{dict.strReports.underReview}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-emerald-600">{stats.submitted}</p>
-            <p className="text-xs text-muted">{dict.strReports.submitted}</p>
-          </CardBody>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label={interpolate(dict.strReports.totalThisYear, { year: new Date().getFullYear() })}
+          value={stats.totalThisYear}
+          icon={FileText}
+          tone="slate"
+        />
+        <StatCard label={dict.strReports.inPreparation} value={stats.inPreparation} icon={Clock} tone="slate" />
+        <StatCard label={dict.strReports.underReview} value={stats.underReview} icon={Eye} tone="amber" />
+        <StatCard label={dict.strReports.submitted} value={stats.submitted} icon={CheckCircle2} tone="green" />
       </div>
 
       <Card>

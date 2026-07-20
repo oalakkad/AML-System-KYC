@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n/client';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { updateAlertStatus } from '@/lib/transactions/actions';
 import type { AlertStatus } from '@/lib/constants';
 
@@ -28,12 +29,12 @@ export function AlertRowActions({ alertId, status }: { alertId: string; status: 
 
   return (
     <div className="flex flex-col items-end gap-2">
-      <input
+      <Input
         type="text"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder={dict.alerts.notesPlaceholder}
-        className="h-8 w-48 rounded-md border border-hairline-strong bg-white px-2 text-xs"
+        className="h-8 w-48 px-2 text-xs"
       />
       <div className="flex gap-1.5">
         {status === 'OPEN' && (

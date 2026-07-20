@@ -1,7 +1,8 @@
+import { Activity, Wallet, FileText, BellRing } from 'lucide-react';
 import { requireSession } from '@/lib/auth/session';
 import { getDict } from '@/lib/i18n';
 import { getReportsOverview, getKycStatusBreakdown, getAlertVolumeByCategory } from '@/lib/reports/queries';
-import { Card, CardBody } from '@/components/ui/card';
+import { StatCard } from '@/components/stat-card';
 import { StatusBreakdownChart, AlertVolumeChart } from '@/components/charts/dashboard-charts';
 import { ExportPdfButton } from './export-pdf-button';
 import { DateRangeSelect } from './date-range-select';
@@ -40,33 +41,16 @@ export default async function ReportsAnalyticsPage({
 
       <p className="text-xs text-faint">{interpolate(dict.reports.lastNDays, { days })}</p>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-ink">{overview.totalTransactions}</p>
-            <p className="text-xs text-muted">{dict.reports.totalTransactions}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-ink">
-              {overview.transactionValueKd.toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-KW')}
-            </p>
-            <p className="text-xs text-muted">{dict.reports.transactionValue}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-emerald-600">{overview.strsSubmitted}</p>
-            <p className="text-xs text-muted">{dict.reports.strsSubmitted}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <p className="text-2xl font-bold tnum text-amber-600">{overview.alertsCount}</p>
-            <p className="text-xs text-muted">{dict.reports.alerts}</p>
-          </CardBody>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label={dict.reports.totalTransactions} value={overview.totalTransactions} icon={Activity} tone="slate" />
+        <StatCard
+          label={dict.reports.transactionValue}
+          value={overview.transactionValueKd.toLocaleString(locale === 'ar' ? 'ar-KW' : 'en-KW')}
+          icon={Wallet}
+          tone="slate"
+        />
+        <StatCard label={dict.reports.strsSubmitted} value={overview.strsSubmitted} icon={FileText} tone="green" />
+        <StatCard label={dict.reports.alerts} value={overview.alertsCount} icon={BellRing} tone="amber" />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">

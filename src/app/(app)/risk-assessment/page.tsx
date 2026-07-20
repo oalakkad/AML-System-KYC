@@ -4,15 +4,19 @@ import { getCraStats } from '@/lib/risk/cra-queries';
 import { CRA_BANDS, CRA_THRESHOLDS, CRA_REVIEW_MONTHS, type CraBand } from '@/lib/risk/cra';
 import { RISK_POINTS } from '@/lib/risk/engine';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
+import { Alert } from '@/components/ui/alert';
+import { TONE_BORDER_T, type Tone } from '@/lib/theme/tones';
 import { interpolate } from '@/lib/i18n/interpolate';
 import { RecalculateButton } from './recalculate-button';
 import type { Dict } from '@/lib/i18n/en';
 
-const BAND_TONE: Record<CraBand, string> = {
-  LOW: 'border-t-emerald-500',
-  MEDIUM: 'border-t-amber-500',
-  HIGH: 'border-t-orange-500',
-  CRITICAL: 'border-t-red-600',
+// Same severity scale as AlertSeverity elsewhere (LOW/slate-adjacent through
+// CRITICAL/violet) — CRA has no "very low" tier, so LOW starts at green.
+const BAND_TONE: Record<CraBand, Tone> = {
+  LOW: 'green',
+  MEDIUM: 'amber',
+  HIGH: 'red',
+  CRITICAL: 'violet',
 };
 
 const FACTOR_DISPLAY: { labelKey: keyof Dict['risk']['factors']; points: number }[] = [
@@ -59,16 +63,14 @@ export default async function RiskAssessmentPage() {
       ) : (
         <>
           {stats.notYetAssessed > 0 && (
-            <Card className="border-amber-200 bg-amber-50">
-              <CardBody className="text-sm text-amber-800">
-                {interpolate(dict.riskAssessment.notYetAssessed, { count: stats.notYetAssessed })}
-              </CardBody>
-            </Card>
+            <Alert tone="warning">
+              {interpolate(dict.riskAssessment.notYetAssessed, { count: stats.notYetAssessed })}
+            </Alert>
           )}
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {CRA_BANDS.map((band) => (
-              <Card key={band} className={`border-t-4 ${BAND_TONE[band]}`}>
+              <Card key={band} className={`border-t-4 ${TONE_BORDER_T[BAND_TONE[band]]}`}>
                 <CardBody>
                   <p className="text-2xl font-bold tnum text-ink">{stats.counts[band]}</p>
                   <p className="text-xs font-medium text-muted">{dict.riskAssessment.bands[band]}</p>
@@ -101,7 +103,7 @@ export default async function RiskAssessmentPage() {
           <CardHeader title={dict.riskAssessment.thresholdsTitle} />
           <CardBody className="space-y-3">
             {CRA_BANDS.map((band) => (
-              <div key={band} className={`rounded-lg border-s-4 ${BAND_TONE[band].replace('border-t-', 'border-s-')} bg-subtle p-3`}>
+              <div key={band} className={`rounded-lg border-s-4 ${TONE_BORDER_T[BAND_TONE[band]].replace('border-t-', 'border-s-')} bg-subtle p-3`}>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-ink">{dict.riskAssessment.bands[band]}</span>
                   <span className="text-xs font-medium tnum text-muted">{THRESHOLD_RANGES[band]}</span>

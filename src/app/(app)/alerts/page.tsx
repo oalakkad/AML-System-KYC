@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { ShieldCheck } from 'lucide-react';
 import { requireSession } from '@/lib/auth/session';
 import { getDict } from '@/lib/i18n';
 import { getAlerts, getAlertCounts } from '@/lib/transactions/queries';
 import { Card, CardBody } from '@/components/ui/card';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { TONE_CHIP } from '@/lib/theme/tones';
 import { formatDateTime } from '@/lib/utils';
 import { AlertRowActions } from './alert-row-actions';
 import { cn } from '@/lib/utils';
@@ -65,7 +67,12 @@ export default async function AlertsPage({
       <Card>
         <CardBody className="p-0">
           {alerts.length === 0 ? (
-            <p className="p-10 text-center text-sm text-muted">🎉 {dict.alerts.noAlerts}</p>
+            <div className="flex flex-col items-center gap-3 p-10 text-center">
+              <div className={cn('flex size-12 items-center justify-center rounded-full', TONE_CHIP.green)}>
+                <ShieldCheck className="size-6" aria-hidden />
+              </div>
+              <p className="text-sm text-muted">{dict.alerts.noAlerts}</p>
+            </div>
           ) : (
             <Table>
               <THead>

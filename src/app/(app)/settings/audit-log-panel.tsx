@@ -3,6 +3,8 @@ import { getDict } from '@/lib/i18n';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input, Select } from '@/components/ui/input';
+import { Label } from '@/components/ui/field';
 import { formatDateTime } from '@/lib/utils';
 import { AUDIT_ACTIONS, type AuditAction } from '@/lib/constants';
 import type { AuditLogFilters, getAuditLogs } from '@/lib/settings/queries';
@@ -32,39 +34,23 @@ export async function AuditLogPanel({
           <form action="/settings" method="get" className="flex flex-wrap items-end gap-3">
             <input type="hidden" name="tab" value="audit" />
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                {dict.settings.audit.filterAction}
-              </label>
-              <select
-                name="action"
-                defaultValue={filters.action ?? ''}
-                className="h-10 rounded-md border border-hairline-strong bg-white px-3 text-sm"
-              >
+              <Label htmlFor="audit-filter-action">{dict.settings.audit.filterAction}</Label>
+              <Select id="audit-filter-action" name="action" defaultValue={filters.action ?? ''}>
                 <option value="">{dict.settings.audit.allActions}</option>
                 {AUDIT_ACTIONS.map((a) => (
                   <option key={a} value={a}>
                     {dict.audit[a]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">{dict.settings.audit.filterFrom}</label>
-              <input
-                type="date"
-                name="from"
-                defaultValue={filters.from ?? ''}
-                className="h-10 rounded-md border border-hairline-strong bg-white px-3 text-sm"
-              />
+              <Label htmlFor="audit-filter-from">{dict.settings.audit.filterFrom}</Label>
+              <Input id="audit-filter-from" type="date" name="from" defaultValue={filters.from ?? ''} />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">{dict.settings.audit.filterTo}</label>
-              <input
-                type="date"
-                name="to"
-                defaultValue={filters.to ?? ''}
-                className="h-10 rounded-md border border-hairline-strong bg-white px-3 text-sm"
-              />
+              <Label htmlFor="audit-filter-to">{dict.settings.audit.filterTo}</Label>
+              <Input id="audit-filter-to" type="date" name="to" defaultValue={filters.to ?? ''} />
             </div>
             <Button type="submit" size="sm">
               {dict.settings.audit.apply}

@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react';
 import { Search, ShieldAlert } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/client';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Input, Select } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckboxRow } from '@/components/kyc/shared';
@@ -34,18 +34,18 @@ export function ScreeningTool({ lists }: { lists: ScreeningListWithCount[] }) {
                   <Search className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-faint" aria-hidden />
                   <Input name="query" defaultValue={state.query} placeholder={dict.screening.searchPlaceholder} className="ps-9" required />
                 </div>
-                <select
+                <Select
                   name="threshold"
                   value={threshold}
                   onChange={(e) => setThreshold(Number(e.target.value))}
-                  className="h-11 rounded-md border border-hairline-strong bg-white px-3 text-sm"
+                  className="sm:w-48"
                 >
                   {[60, 70, 80, 90].map((t) => (
                     <option key={t} value={t}>
                       {t}% {dict.screening.threshold}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <Button type="submit" loading={pending}>
                   <Search className="size-4" aria-hidden />
                   {pending ? dict.screening.searching : dict.screening.search}
