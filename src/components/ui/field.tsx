@@ -5,9 +5,9 @@ import { cn } from '@/lib/utils';
 
 export function Label({ className, children, required, ...props }: LabelHTMLAttributes<HTMLLabelElement> & { required?: boolean }) {
   return (
-    <label className={cn('mb-1.5 block text-sm font-semibold text-slate-700', className)} {...props}>
+    <label className={cn('mb-1.5 block text-sm font-semibold text-ink', className)} {...props}>
       {children}
-      {required && <span className="ms-1 text-red-500" aria-hidden>*</span>}
+      {required && <span className="ms-1 text-red-600" aria-hidden>*</span>}
     </label>
   );
 }

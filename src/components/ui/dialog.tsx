@@ -37,7 +37,7 @@ export function Dialog({ open, onClose, title, children, dismissible = true, cla
         if (dismissible && e.target === ref.current) onClose();
       }}
       className={cn(
-        'm-auto w-full max-w-lg rounded-xl border border-hairline bg-white p-0 text-ink shadow-pop backdrop:bg-slate-900/40',
+        'm-auto w-full max-w-lg rounded-2xl border border-hairline bg-white p-0 text-ink shadow-pop backdrop:bg-slate-900/40',
         className,
       )}
     >

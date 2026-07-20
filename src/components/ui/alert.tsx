@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const alertVariants = cva('flex items-start gap-3 rounded-md border p-4 text-sm', {
+const alertVariants = cva('flex items-start gap-3 rounded-xl border p-4 text-sm', {
   variants: {
     tone: {
       info: 'border-blue-200 bg-blue-50 text-blue-900',
