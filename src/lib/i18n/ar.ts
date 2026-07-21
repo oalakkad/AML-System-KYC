@@ -410,6 +410,7 @@ export const ar: Dict = {
     craReviewComplianceHint: 'العملاء المعتمدون الذين روجعوا ضمن دورة فئة مخاطرهم',
     onTime: 'في الموعد',
     craOverdueCaption: '{count} عميل متأخر عن موعد مراجعة تقييم المخاطر التالي',
+    craCaption: 'تم إنجاز {onTime} من أصل {total} مراجعة دورية ضمن الموعد المحدد',
     craNoneAssessed: 'لا يوجد عملاء معتمدون تم تقييمهم بعد',
     recentActivity: 'النشاط الأخير',
     recentActivityHint: 'سجل الإنشاء والمراجعة، عبر جميع الطلبات',

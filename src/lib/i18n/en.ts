@@ -417,6 +417,7 @@ export const en = {
     craReviewComplianceHint: 'Approved clients reviewed within their risk-band cadence',
     onTime: 'on time',
     craOverdueCaption: '{count} clients overdue for their next CRA review',
+    craCaption: '{onTime} of {total} periodic reviews completed within the due window',
     craNoneAssessed: 'No approved clients assessed yet',
     recentActivity: 'Recent Activity',
     recentActivityHint: 'Maker-checker trail, across all cases',

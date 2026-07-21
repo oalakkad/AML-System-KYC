@@ -97,11 +97,12 @@ export function CaseTrendChart({
 
   return (
     <Card>
-      <CardHeader
-        title={title}
-        description={`${total} ${totalLabel}`}
-      />
+      <CardHeader title={title} />
       <CardBody>
+        <div className="mb-1 flex items-baseline gap-2">
+          <p className="text-2xl font-extrabold tracking-tight tnum text-ink">{total}</p>
+          <p className="text-sm font-semibold text-muted">{totalLabel}</p>
+        </div>
         <div className="h-68 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
@@ -158,6 +159,28 @@ export function CaseTrendChart({
   );
 }
 
+/** A single labeled row: dot + name, a proportional track, and the raw value —
+ * the direct-labeled list style used for small categorical breakdowns instead
+ * of a full bar chart with axes (each row already carries its own label). */
+function BarRow({ name, count, max, color }: { name: string; count: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.max(2, Math.round((count / max) * 100)) : 0;
+  return (
+    <div className="grid grid-cols-[minmax(0,7.5rem)_1fr_3rem] items-center gap-3">
+      <span className="flex items-center gap-2 truncate text-xs font-semibold text-muted">
+        <span className="size-2 shrink-0 rounded-[3px]" style={{ backgroundColor: color }} aria-hidden />
+        <span className="truncate">{name}</span>
+      </span>
+      <span className="h-2.25 overflow-hidden rounded-full bg-subtle">
+        <span
+          className="block h-full rounded-full transition-[width] duration-500 ease-out"
+          style={{ width: `${pct}%`, backgroundColor: color }}
+        />
+      </span>
+      <span className="text-end text-xs font-bold tnum text-ink">{count}</span>
+    </div>
+  );
+}
+
 export function RiskDistributionChart({
   data,
   title,
@@ -168,26 +191,14 @@ export function RiskDistributionChart({
   labels: Record<RiskRating, string>;
 }) {
   const chartData = data.map((d) => ({ ...d, name: labels[d.rating] }));
+  const max = Math.max(1, ...chartData.map((d) => d.count));
   return (
     <Card>
       <CardHeader title={title} />
-      <CardBody>
-        <div className="h-56 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 16, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
-              <CartesianGrid stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: 'var(--color-hairline)' }} tickLine={false} />
-              <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} allowDecimals={false} width={36} />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--color-subtle)' }} />
-              <Bar dataKey="count" name={title} radius={[6, 6, 0, 0]} maxBarSize={52}>
-                {chartData.map((d) => (
-                  <Cell key={d.rating} fill={RISK_COLOR[d.rating]} />
-                ))}
-                <LabelList dataKey="count" position="top" style={{ fill: 'var(--color-ink)', fontSize: 11, fontWeight: 700 }} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <CardBody className="space-y-3.5">
+        {chartData.map((d) => (
+          <BarRow key={d.rating} name={d.name} count={d.count} max={max} color={RISK_COLOR[d.rating]} />
+        ))}
       </CardBody>
     </Card>
   );
@@ -206,52 +217,18 @@ export function StatusBreakdownChart({
     .filter((d) => d.count > 0)
     .map((d) => ({ ...d, name: labels[d.status] }))
     .sort((a, b) => b.count - a.count);
+  const max = Math.max(1, ...chartData.map((d) => d.count));
 
   return (
     <Card>
       <CardHeader title={title} />
-      <CardBody>
+      <CardBody className={chartData.length === 0 ? undefined : 'space-y-3.5'}>
         {chartData.length === 0 ? (
-          <div className="flex h-56 items-center justify-center text-sm text-muted font-medium">—</div>
+          <div className="flex h-32 items-center justify-center text-sm text-muted font-medium">—</div>
         ) : (
-          <>
-            <div className="h-56 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  layout="vertical"
-                  margin={{ top: 0, right: 24, left: 8, bottom: 0 }}
-                  barCategoryGap="26%"
-                >
-                  <CartesianGrid stroke={GRID_STROKE} horizontal={false} />
-                  <XAxis type="number" hide allowDecimals={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    tick={AXIS_STYLE}
-                    axisLine={false}
-                    tickLine={false}
-                    width={110}
-                  />
-                  <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--color-subtle)' }} />
-                  <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={16}>
-                    {chartData.map((d) => (
-                      <Cell key={d.status} fill={STATUS_COLOR[d.status]} />
-                    ))}
-                    <LabelList dataKey="count" position="right" style={{ fill: 'var(--color-ink)', fontSize: 11, fontWeight: 700 }} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-hairline pt-3">
-              {chartData.map((d) => (
-                <span key={d.status} className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-                  <span className="size-2 rounded-full" style={{ backgroundColor: STATUS_COLOR[d.status] }} aria-hidden />
-                  {d.name}
-                </span>
-              ))}
-            </div>
-          </>
+          chartData.map((d) => (
+            <BarRow key={d.status} name={d.name} count={d.count} max={max} color={STATUS_COLOR[d.status]} />
+          ))
         )}
       </CardBody>
     </Card>

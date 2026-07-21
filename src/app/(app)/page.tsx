@@ -281,10 +281,11 @@ export default async function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-muted">
-          <Building2 className="size-4" aria-hidden />
+        <div className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted">
+          <Building2 className="size-3.5 text-accent" aria-hidden />
           {dict.dashboard.corporateOverview}
-        </h2>
+          <span className="h-px flex-1 bg-hairline" aria-hidden />
+        </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label={dict.dashboard.corporateCases} value={corpStats.total} icon={Building2} tone="slate" breakdown={corpStats.breakdown.total} breakdownTitle={dict.risk.rating} />
           <StatCard label={dict.dashboard.corporatePendingCompliance} value={corpStats.pendingCompliance} icon={ClipboardList} tone="blue" breakdown={corpStats.breakdown.pendingCompliance} breakdownTitle={dict.risk.rating} />
@@ -325,7 +326,11 @@ export default async function DashboardPage() {
                   <p className="text-[10px] font-bold uppercase tracking-wide text-faint">{dict.dashboard.onTime}</p>
                 </div>
               </div>
-              {craCompliance.total === 0 && (
+              {craCompliance.total > 0 ? (
+                <p className="mt-3.5 max-w-48 text-center text-xs font-medium text-muted">
+                  {interpolate(dict.dashboard.craCaption, { onTime: craCompliance.onTime, total: craCompliance.total })}
+                </p>
+              ) : (
                 <p className="mt-3.5 text-center text-xs font-semibold text-muted">{dict.dashboard.craNoneAssessed}</p>
               )}
             </CardBody>
