@@ -15,6 +15,8 @@ import { CaseSummary } from '@/components/kyc/case-summary';
 import { DecisionPanel } from '@/components/kyc/decision-panel';
 import { AuditTimeline, type TimelineEntry } from '@/components/kyc/audit-timeline';
 import { DocumentsPanel } from '@/components/kyc/documents-panel';
+import { KycPrintForm } from '@/components/kyc/kyc-print-form';
+import { PrintKycButton } from '@/components/kyc/print-kyc-button';
 import { formatDate } from '@/lib/utils';
 import type { CaseStatus, DocType, RiskRating, AuditAction } from '@/lib/constants';
 import type { RiskFactor } from '@/lib/risk/engine';
@@ -32,6 +34,8 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
       documents: { orderBy: { createdAt: 'asc' } },
       maker: { select: { nameEn: true, nameAr: true } },
       clientMaker: { select: { nameEn: true, nameAr: true } },
+      checker: { select: { nameEn: true, nameAr: true } },
+      approver: { select: { nameEn: true, nameAr: true } },
       auditLogs: {
         orderBy: { createdAt: 'desc' },
         include: {
@@ -108,76 +112,118 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
       ? `${locale === 'ar' ? kase.clientMaker.nameAr : kase.clientMaker.nameEn} ${dict.caseView.selfServiceSuffix}`
       : null;
 
+  const checkerName = kase.checker
+    ? locale === 'ar'
+      ? kase.checker.nameAr
+      : kase.checker.nameEn
+    : null;
+  const approverName = kase.approver
+    ? locale === 'ar'
+      ? kase.approver.nameAr
+      : kase.approver.nameEn
+    : null;
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-extrabold tracking-tight text-ink">{kase.caseNumber}</h1>
-            <StatusBadge status={status} />
+    <>
+      <KycPrintForm
+        caseNumber={kase.caseNumber}
+        displayName={displayName}
+        status={status}
+        createdAt={formatDate(kase.createdAt, locale)}
+        submittedAt={kase.submittedAt ? formatDate(kase.submittedAt, locale) : null}
+        sections={sections}
+        risk={risk}
+        parties={[
+          { label: dict.caseView.preparedBy, name: makerName },
+          {
+            label: dict.caseView.complianceReviewedBy,
+            name: checkerName,
+            decision: kase.complianceDecision,
+            notes: kase.complianceNotes,
+            at: kase.complianceAt ? formatDate(kase.complianceAt, locale) : null,
+          },
+          {
+            label: dict.caseView.approvedBy,
+            name: approverName,
+            decision: kase.managerDecision,
+            notes: kase.managerNotes,
+            at: kase.managerAt ? formatDate(kase.managerAt, locale) : null,
+          },
+        ]}
+      />
+      <div className="space-y-6 print:hidden">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-extrabold tracking-tight text-ink">{kase.caseNumber}</h1>
+              <StatusBadge status={status} />
+            </div>
+            <p className="mt-1 text-sm text-muted">
+              {displayName || dict.common.notProvided} · {dict.caseView.maker}: {makerName} ·{' '}
+              {dict.caseView.submittedAt}: {formatDate(kase.submittedAt, locale)}
+            </p>
           </div>
-          <p className="mt-1 text-sm text-muted">
-            {displayName || dict.common.notProvided} · {dict.caseView.maker}: {makerName} ·{' '}
-            {dict.caseView.submittedAt}: {formatDate(kase.submittedAt, locale)}
-          </p>
-        </div>
-        {editable && (
-          <Link href={`/cases/${kase.id}/edit`}>
-            <Button>
-              <Pencil className="size-4" aria-hidden />
-              {status === 'RETURNED' ? dict.caseView.continueEditing : dict.common.edit}
-            </Button>
-          </Link>
-        )}
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <div className="min-w-0">
-          <CaseSummary sections={sections} risk={risk} />
+          <div className="flex items-center gap-2">
+            <PrintKycButton />
+            {editable && (
+              <Link href={`/cases/${kase.id}/edit`}>
+                <Button>
+                  <Pencil className="size-4" aria-hidden />
+                  {status === 'RETURNED' ? dict.caseView.continueEditing : dict.common.edit}
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
 
-        <aside className="space-y-6">
-          {(canReview || canApprove) && (
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+          <div className="min-w-0">
+            <CaseSummary sections={sections} risk={risk} />
+          </div>
+
+          <aside className="space-y-6">
+            {(canReview || canApprove) && (
+              <Card>
+                <CardHeader
+                  title={canReview ? dict.caseView.complianceDecision : dict.caseView.managerDecision}
+                />
+                <CardBody>
+                  <DecisionPanel
+                    caseId={kase.id}
+                    stage={canReview ? 'compliance' : 'manager'}
+                    isHighRisk={kase.finalRiskRating === 'HIGH'}
+                  />
+                </CardBody>
+              </Card>
+            )}
+
             <Card>
-              <CardHeader
-                title={canReview ? dict.caseView.complianceDecision : dict.caseView.managerDecision}
-              />
+              <CardHeader title={dict.caseView.documents} />
               <CardBody>
-                <DecisionPanel
+                <DocumentsPanel
                   caseId={kase.id}
-                  stage={canReview ? 'compliance' : 'manager'}
-                  isHighRisk={kase.finalRiskRating === 'HIGH'}
+                  readOnly
+                  docs={kase.documents.map((d) => ({
+                    id: d.id,
+                    docType: d.docType as DocType,
+                    fileName: d.fileName,
+                    sizeBytes: d.sizeBytes,
+                  }))}
                 />
               </CardBody>
             </Card>
-          )}
 
-          <Card>
-            <CardHeader title={dict.caseView.documents} />
-            <CardBody>
-              <DocumentsPanel
-                caseId={kase.id}
-                readOnly
-                docs={kase.documents.map((d) => ({
-                  id: d.id,
-                  docType: d.docType as DocType,
-                  fileName: d.fileName,
-                  sizeBytes: d.sizeBytes,
-                }))}
-              />
-            </CardBody>
-          </Card>
-
-          {timeline.length > 0 && (
-            <Card>
-              <CardHeader title={dict.caseView.timeline} />
-              <CardBody>
-                <AuditTimeline entries={timeline} />
-              </CardBody>
-            </Card>
-          )}
-        </aside>
+            {timeline.length > 0 && (
+              <Card>
+                <CardHeader title={dict.caseView.timeline} />
+                <CardBody>
+                  <AuditTimeline entries={timeline} />
+                </CardBody>
+              </Card>
+            )}
+          </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

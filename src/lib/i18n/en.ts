@@ -334,6 +334,12 @@ export const en = {
     submitCase: 'Submit for Review',
     submitConfirm: 'Submit this case for compliance review? You will not be able to edit it afterwards.',
     returnedBanner: 'This case was returned for correction. Review the compliance notes, fix the issues, and resubmit.',
+    printForm: 'Print KYC Form',
+    signature: 'Signature',
+    date: 'Date',
+    preparedBy: 'Prepared By',
+    complianceReviewedBy: 'Compliance Reviewed By',
+    approvedBy: 'Approved By',
     sections: {
       caseInfo: 'Case Information',
       personal: 'Personal Information',

@@ -327,6 +327,12 @@ export const ar: Dict = {
     submitCase: 'إرسال للمراجعة',
     submitConfirm: 'إرسال هذا الطلب لمراجعة الامتثال؟ لن تتمكن من تعديله بعد ذلك.',
     returnedBanner: 'أعيد هذا الطلب للتصحيح. راجع ملاحظات الامتثال وصحح الأخطاء ثم أعد الإرسال.',
+    printForm: 'طباعة نموذج اعرف عميلك',
+    signature: 'التوقيع',
+    date: 'التاريخ',
+    preparedBy: 'أُعد بواسطة',
+    complianceReviewedBy: 'راجعه الامتثال',
+    approvedBy: 'اعتمده',
     sections: {
       caseInfo: 'بيانات الطلب',
       personal: 'البيانات الشخصية',

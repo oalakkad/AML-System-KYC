@@ -167,6 +167,22 @@ h1, h2, h3, .font-display {
   font-weight: 800;
 }
 
+/* Printed output (KYC form, report exports) is always light-on-white, no
+   matter which theme (Midnight/Azure) is active on screen — see
+   components/kyc/kyc-print-form.tsx. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  html {
+    color-scheme: light;
+  }
+  body {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
 label, th {
   font-weight: 600;
 }

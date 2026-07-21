@@ -13,6 +13,9 @@ import { Button } from '@/components/ui/button';
 import { PortalCaseSummary } from '@/components/portal/portal-case-summary';
 import { PortalCaseDocuments } from './documents-section';
 import { SignPanel } from '@/components/portal/sign-panel';
+import { KycPrintForm } from '@/components/kyc/kyc-print-form';
+import { PrintKycButton } from '@/components/kyc/print-kyc-button';
+import { formatDate } from '@/lib/utils';
 import { CASE_STATUSES_CLOSED_TO_CLIENT, type CaseStatus, type DocType } from '@/lib/constants';
 
 export default async function PortalCaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -48,7 +51,23 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
         : null;
 
   return (
-    <div className="space-y-6">
+    <>
+      <KycPrintForm
+        caseNumber={kase.caseNumber}
+        displayName={displayName}
+        status={status}
+        createdAt={formatDate(kase.createdAt, locale)}
+        submittedAt={kase.submittedAt ? formatDate(kase.submittedAt, locale) : null}
+        sections={sections}
+        parties={[
+          {
+            label: dict.caseView.signature,
+            name: kase.clientSignatureName,
+            at: kase.clientSignedAt ? formatDate(kase.clientSignedAt, locale) : null,
+          },
+        ]}
+      />
+      <div className="space-y-6 print:hidden">
       <Link href="/portal" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
         <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
         {dict.portal.backToCases}
@@ -62,14 +81,17 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
           </div>
           <p className="mt-1 text-sm text-muted">{displayName || dict.common.notProvided}</p>
         </div>
-        {isOwnCase && status === 'RETURNED' && (
-          <Link href={`/portal/cases/${kase.id}/edit`}>
-            <Button size="sm">
-              <Pencil className="size-4" aria-hidden />
-              {dict.portal.editAndResubmit}
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <PrintKycButton />
+          {isOwnCase && status === 'RETURNED' && (
+            <Link href={`/portal/cases/${kase.id}/edit`}>
+              <Button size="sm">
+                <Pencil className="size-4" aria-hidden />
+                {dict.portal.editAndResubmit}
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       {(status === 'RETURNED' || status === 'REJECTED') && (
@@ -107,6 +129,7 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
           />
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
