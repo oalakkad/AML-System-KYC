@@ -73,7 +73,7 @@ export function StatCard({
 
   return (
     <div
-      className="group relative rounded-2xl border border-hairline bg-card p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
+      className="group relative z-0 rounded-2xl border border-hairline bg-card p-5 shadow-card transition-all duration-200 hover:z-20 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-raised focus-within:z-20 focus-within:-translate-y-0.5 focus-within:border-hairline-strong focus-within:shadow-raised"
       tabIndex={hasBreakdown ? 0 : undefined}
     >
       <div className="flex items-start justify-between gap-2">
