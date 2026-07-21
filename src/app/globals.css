@@ -11,8 +11,8 @@
    BOTH themes so the brand hue never competes with meaning.
    ============================================================ */
 @theme {
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, var(--font-cairo), sans-serif;
-  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, var(--font-cairo), sans-serif;
+  --font-sans: var(--font-montserrat), var(--font-cairo), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-montserrat), var(--font-cairo), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
 
   /* Surfaces */
@@ -146,7 +146,7 @@
 
 html {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   scroll-behavior: smooth;
   color-scheme: dark;
 }

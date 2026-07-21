@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
-import { Cairo } from 'next/font/google';
+import { Cairo, Montserrat } from 'next/font/google';
 import { getDict } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n/client';
 import { getBrandSettings } from '@/lib/settings/queries';
 import './globals.css';
 
-// Latin text uses the OS's own default UI font (system-ui stack, set in
-// globals.css) instead of a loaded webfont — matches what the approved
-// design mockups actually rendered with in preview.
+// Latin display/body face
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+});
 
 // Arabic companion face for RTL text
 const cairo = Cairo({
@@ -56,7 +59,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className={`${cairo.variable} min-h-dvh antialiased`}>
+      <body className={`${montserrat.variable} ${cairo.variable} min-h-dvh antialiased`}>
         <I18nProvider dict={dict} locale={locale}>
           {children}
         </I18nProvider>
