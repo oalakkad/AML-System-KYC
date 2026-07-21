@@ -55,11 +55,17 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } as React.CSSProperties;
 
   return (
-    <html lang={locale} dir={dir} style={brandStyle} suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir={dir}
+      style={brandStyle}
+      className={`${montserrat.variable} ${cairo.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className={`${montserrat.variable} ${cairo.variable} min-h-dvh antialiased`}>
+      <body className="min-h-dvh antialiased">
         <I18nProvider dict={dict} locale={locale}>
           {children}
         </I18nProvider>
