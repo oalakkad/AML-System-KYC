@@ -7,6 +7,7 @@ import { getClientCase } from '@/lib/portal/queries';
 import { getCountryOptions } from '@/lib/cases/queries';
 import { buildDisplaySections } from '@/lib/cases/display';
 import { buildCorporateDisplaySections } from '@/lib/cases/corporate-display';
+import { zipBilingualSections } from '@/lib/cases/print-bilingual';
 import { StatusBadge } from '@/components/status-badge';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,8 @@ import { SignPanel } from '@/components/portal/sign-panel';
 import { KycPrintForm } from '@/components/kyc/kyc-print-form';
 import { PrintKycButton } from '@/components/kyc/print-kyc-button';
 import { formatDate } from '@/lib/utils';
+import { en } from '@/lib/i18n/en';
+import { ar } from '@/lib/i18n/ar';
 import { CASE_STATUSES_CLOSED_TO_CLIENT, type CaseStatus, type DocType } from '@/lib/constants';
 
 export default async function PortalCaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -39,6 +42,14 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
   const sections = isCorporate
     ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, locale)
     : buildDisplaySections(kase, kase.profile!, countries, locale);
+  const printSections = zipBilingualSections(
+    isCorporate
+      ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, 'en')
+      : buildDisplaySections(kase, kase.profile!, countries, 'en'),
+    isCorporate
+      ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, 'ar')
+      : buildDisplaySections(kase, kase.profile!, countries, 'ar'),
+  );
   const displayName = isCorporate ? kase.corporateProfile!.legalName : kase.profile!.fullName;
   const status = kase.status as CaseStatus;
   const closed = CASE_STATUSES_CLOSED_TO_CLIENT.includes(status);
@@ -53,15 +64,18 @@ export default async function PortalCaseDetailPage({ params }: { params: Promise
   return (
     <>
       <KycPrintForm
+        clientTypeEn={isCorporate ? 'Corporate' : 'Individual'}
+        clientTypeAr={isCorporate ? 'شركات' : 'أفراد'}
         caseNumber={kase.caseNumber}
         displayName={displayName}
         status={status}
         createdAt={formatDate(kase.createdAt, locale)}
         submittedAt={kase.submittedAt ? formatDate(kase.submittedAt, locale) : null}
-        sections={sections}
+        sections={printSections}
         parties={[
           {
-            label: dict.caseView.signature,
+            labelEn: en.caseView.signature,
+            labelAr: ar.caseView.signature,
             name: kase.clientSignatureName,
             at: kase.clientSignedAt ? formatDate(kase.clientSignedAt, locale) : null,
           },

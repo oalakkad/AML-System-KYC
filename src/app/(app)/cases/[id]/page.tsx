@@ -8,6 +8,7 @@ import { canEditCase } from '@/lib/workflow';
 import { getCountryOptions } from '@/lib/cases/queries';
 import { buildDisplaySections } from '@/lib/cases/display';
 import { buildCorporateDisplaySections } from '@/lib/cases/corporate-display';
+import { zipBilingualSections } from '@/lib/cases/print-bilingual';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
@@ -18,6 +19,8 @@ import { DocumentsPanel } from '@/components/kyc/documents-panel';
 import { KycPrintForm } from '@/components/kyc/kyc-print-form';
 import { PrintKycButton } from '@/components/kyc/print-kyc-button';
 import { formatDate } from '@/lib/utils';
+import { en } from '@/lib/i18n/en';
+import { ar } from '@/lib/i18n/ar';
 import type { CaseStatus, DocType, RiskRating, AuditAction } from '@/lib/constants';
 import type { RiskFactor } from '@/lib/risk/engine';
 
@@ -59,6 +62,14 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
   const sections = isCorporate
     ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, locale)
     : buildDisplaySections(kase, kase.profile!, countries, locale);
+  const printSections = zipBilingualSections(
+    isCorporate
+      ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, 'en')
+      : buildDisplaySections(kase, kase.profile!, countries, 'en'),
+    isCorporate
+      ? buildCorporateDisplaySections(kase, kase.corporateProfile!, countries, 'ar')
+      : buildDisplaySections(kase, kase.profile!, countries, 'ar'),
+  );
   const displayName = isCorporate ? kase.corporateProfile!.legalName : kase.profile!.fullName;
 
   const canReview = session.role === 'COMPLIANCE_OFFICER' && status === 'PENDING_COMPLIANCE';
@@ -126,24 +137,28 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       <KycPrintForm
+        clientTypeEn={isCorporate ? 'Corporate' : 'Individual'}
+        clientTypeAr={isCorporate ? 'شركات' : 'أفراد'}
         caseNumber={kase.caseNumber}
         displayName={displayName}
         status={status}
         createdAt={formatDate(kase.createdAt, locale)}
         submittedAt={kase.submittedAt ? formatDate(kase.submittedAt, locale) : null}
-        sections={sections}
+        sections={printSections}
         risk={risk}
         parties={[
-          { label: dict.caseView.preparedBy, name: makerName },
+          { labelEn: en.caseView.preparedBy, labelAr: ar.caseView.preparedBy, name: makerName },
           {
-            label: dict.caseView.complianceReviewedBy,
+            labelEn: en.caseView.complianceReviewedBy,
+            labelAr: ar.caseView.complianceReviewedBy,
             name: checkerName,
             decision: kase.complianceDecision,
             notes: kase.complianceNotes,
             at: kase.complianceAt ? formatDate(kase.complianceAt, locale) : null,
           },
           {
-            label: dict.caseView.approvedBy,
+            labelEn: en.caseView.approvedBy,
+            labelAr: ar.caseView.approvedBy,
             name: approverName,
             decision: kase.managerDecision,
             notes: kase.managerNotes,
