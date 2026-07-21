@@ -83,8 +83,8 @@ export function StatCard({
         {spark && <Sparkline data={spark} tone={tone} />}
       </div>
 
-      <p className="mt-4 text-[26px] font-extrabold leading-none tracking-tight tnum text-ink">{value}</p>
-      <p className="mt-1.5 text-[13px] font-semibold text-muted">{label}</p>
+      <p className="mt-4 text-[32px] font-extrabold leading-none tracking-tight tnum text-ink">{value}</p>
+      <p className="mt-1.5 text-[15px] font-semibold text-muted">{label}</p>
 
       {hasBreakdown && (
         <div

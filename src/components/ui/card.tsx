@@ -24,8 +24,8 @@ export function CardHeader({
   return (
     <div className={cn('flex items-center justify-between gap-4 border-b border-hairline px-6 py-4.5', className)}>
       <div className="space-y-0.5">
-        <h2 className="text-base font-extrabold text-ink leading-tight tracking-tight">{title}</h2>
-        {description && <p className="text-xs text-muted font-medium">{description}</p>}
+        <h2 className="text-lg font-extrabold text-ink leading-tight tracking-tight">{title}</h2>
+        {description && <p className="text-sm text-muted font-medium">{description}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

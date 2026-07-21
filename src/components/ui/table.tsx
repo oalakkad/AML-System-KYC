@@ -24,7 +24,7 @@ export function Tr({ className, ...props }: HTMLAttributes<HTMLTableRowElement>)
 export function Th({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
-      className={cn('px-5 py-3.5 text-start text-xs font-bold uppercase tracking-wider text-muted', className)}
+      className={cn('px-5 py-3.5 text-start text-[13px] font-bold uppercase tracking-wider text-muted', className)}
       {...props}
     />
   );

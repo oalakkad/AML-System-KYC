@@ -202,8 +202,8 @@ export function AppShell({
         </div>
         {(!collapsed || mobile) && (
           <div className="min-w-0">
-            <p className="truncate text-base font-bold text-ink tracking-tight">{dict.common.appName}</p>
-            <p className="truncate text-[10px] font-bold uppercase tracking-widest text-faint">{dict.common.kycModule}</p>
+            <p className="truncate text-lg font-bold text-ink tracking-tight">{dict.common.appName}</p>
+            <p className="truncate text-[11px] font-bold uppercase tracking-widest text-faint">{dict.common.kycModule}</p>
           </div>
         )}
         {mobile && (
@@ -223,7 +223,7 @@ export function AppShell({
         {groups.map((group) => (
           <div key={group.label}>
             {(!collapsed || mobile) && (
-              <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-faint">
+              <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-widest text-faint">
                 {group.label}
               </p>
             )}
@@ -236,7 +236,7 @@ export function AppShell({
                       href={item.href}
                       title={collapsed && !mobile ? item.label : undefined}
                       className={cn(
-                        'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200',
+                        'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                         collapsed && !mobile && 'justify-center px-0',
                         active
                           ? 'bg-sidebar-active text-primary font-bold'
@@ -324,8 +324,8 @@ export function AppShell({
             </button>
 
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted/80">{dict.common.kycModule}</p>
-              <h1 className="truncate text-sm font-bold text-ink leading-tight">{currentLabel}</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted/80">{dict.common.kycModule}</p>
+              <h1 className="truncate text-base font-bold text-ink leading-tight">{currentLabel}</h1>
             </div>
           </div>
 
@@ -360,8 +360,8 @@ export function AppShell({
                   {initials(displayName)}
                 </span>
                 <span className="hidden text-start sm:block">
-                  <span className="block max-w-32 truncate text-xs font-bold text-ink leading-tight">{displayName}</span>
-                  <span className="block text-[10px] font-semibold text-muted leading-none mt-0.5">{dict.roles[user.role]}</span>
+                  <span className="block max-w-32 truncate text-sm font-bold text-ink leading-tight">{displayName}</span>
+                  <span className="block text-[11px] font-semibold text-muted leading-none mt-0.5">{dict.roles[user.role]}</span>
                 </span>
                 <ChevronLeft className="hidden size-4 -rotate-90 text-faint sm:block transition-transform duration-200" aria-hidden />
               </button>

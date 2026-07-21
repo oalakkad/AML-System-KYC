@@ -19,9 +19,9 @@ const buttonVariants = cva(
         warning: 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm hover:shadow-md hover:shadow-amber-500/10',
       },
       size: {
-        sm: 'h-9.5 px-3.5 text-xs tracking-wide',
-        md: 'h-11 px-4.5 text-sm',
-        lg: 'h-12 px-6 text-base',
+        sm: 'h-9.5 px-3.5 text-[13px] tracking-wide',
+        md: 'h-11 px-4.5 text-base',
+        lg: 'h-12 px-6 text-lg',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
