@@ -8,7 +8,6 @@ import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/client';
 import { RiskBadge } from '@/components/status-badge';
 import { RISK_THRESHOLDS, type RiskResult } from '@/lib/risk/engine';
-import type { Dict } from '@/lib/i18n/en';
 
 const BAND_COLOR = { LOW: '#0f9d6d', MEDIUM: '#c77d0a', HIGH: '#dc3545' };
 
@@ -61,6 +60,8 @@ export function RiskPanel({ result }: { result: RiskResult }) {
   );
 }
 
-export function riskFactorLabel(key: string, dict: Dict): string {
-  return (dict.risk.factors as Record<string, string>)[key] ?? key;
-}
+// Re-exported for existing importers (e.g. case-summary.tsx) — the actual
+// implementation lives in lib/risk/labels.ts (a plain, non-client module) so
+// server components like kyc-print-form.tsx can call it directly instead of
+// pulling a function out of this 'use client' file at runtime.
+export { riskFactorLabel } from '@/lib/risk/labels';

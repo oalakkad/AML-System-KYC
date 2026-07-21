@@ -12,7 +12,7 @@
 
 import { en } from '@/lib/i18n/en';
 import { ar } from '@/lib/i18n/ar';
-import { riskFactorLabel } from './risk-panel';
+import { riskFactorLabel } from '@/lib/risk/labels';
 import type { BilingualSection } from '@/lib/cases/print-bilingual';
 import type { CaseStatus, RiskRating } from '@/lib/constants';
 
