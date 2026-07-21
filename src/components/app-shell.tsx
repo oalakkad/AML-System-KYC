@@ -27,6 +27,7 @@ import {
 import { useI18n } from '@/lib/i18n/client';
 import { logout } from '@/lib/auth/actions';
 import { LanguageToggle } from '@/components/language-toggle';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import type { Role } from '@/lib/constants';
 import type { Dict } from '@/lib/i18n/en';
@@ -244,7 +245,7 @@ export function AppShell({
                     >
                       {active && (
                         <span
-                          className="absolute inset-y-2.5 start-0 w-1 rounded-full bg-gradient-to-b from-primary to-accent shadow-[0_0_8px_rgba(79,70,229,0.5)]"
+                          className="absolute inset-y-2.5 start-0 w-1 rounded-full bg-gradient-to-b from-primary to-accent shadow-[0_0_8px_var(--color-primary-soft)]"
                           aria-hidden
                         />
                       )}
@@ -329,6 +330,7 @@ export function AppShell({
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <LanguageToggle />
 
             {alertCount !== undefined && (
@@ -339,7 +341,7 @@ export function AppShell({
               >
                 <Bell className="size-4.5" aria-hidden />
                 {alertCount > 0 && (
-                  <span className="absolute top-1 end-1 flex size-3.5 items-center justify-center rounded-full border-2 border-card bg-red-500 text-[8px] font-bold text-white">
+                  <span className="absolute top-1 end-1 flex size-3.5 items-center justify-center rounded-full border-2 border-card bg-[var(--color-bad)] text-[8px] font-bold text-white">
                     {badgeCount(alertCount)}
                   </span>
                 )}
@@ -373,7 +375,7 @@ export function AppShell({
                   <form action={logout}>
                     <button
                       type="submit"
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold text-[var(--color-bad)] transition-colors hover:bg-[color-mix(in_srgb,var(--color-bad)_10%,transparent)]"
                     >
                       <LogOut className="size-4" aria-hidden />
                       {dict.common.logout}

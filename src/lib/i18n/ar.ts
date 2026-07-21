@@ -35,6 +35,8 @@ export const ar: Dict = {
     none: 'لا يوجد',
     collapse: 'طي',
     expand: 'توسيع',
+    darkMode: 'التبديل إلى الوضع الداكن',
+    lightMode: 'التبديل إلى الوضع الفاتح',
     select: 'اختر…',
     notProvided: 'غير مذكور',
     error: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',

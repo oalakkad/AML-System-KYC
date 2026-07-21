@@ -307,13 +307,13 @@ export default async function DashboardPage() {
             <CardBody className="flex flex-col items-center">
               <div className="relative size-32">
                 <svg width="128" height="128" viewBox="0 0 128 128" className="-rotate-90">
-                  <circle cx="64" cy="64" r="54" fill="none" stroke="var(--color-bg)" strokeWidth="11" />
+                  <circle cx="64" cy="64" r="54" fill="none" stroke="var(--color-hairline-strong)" strokeWidth="11" />
                   <circle
                     cx="64"
                     cy="64"
                     r="54"
                     fill="none"
-                    stroke={craCompliance.percentOnTime >= 80 ? '#0f9d6d' : craCompliance.percentOnTime >= 50 ? '#c77d0a' : '#dc3545'}
+                    stroke={craCompliance.percentOnTime >= 80 ? 'var(--tone-green)' : craCompliance.percentOnTime >= 50 ? 'var(--tone-amber)' : 'var(--tone-red)'}
                     strokeWidth="11"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 54}

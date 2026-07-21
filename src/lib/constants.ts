@@ -251,9 +251,13 @@ export const SETTING_KEYS = {
 } as const;
 
 // Default brand colors (also the "Reset to Default" values in Settings > Branding).
+// primaryColor/accentColor feed --color-primary-raw/--color-accent-raw in
+// globals.css, which auto-adjust per theme (Midnight/Azure) via color-mix —
+// sidebarFromColor/sidebarToColor are unused now that the sidebar is a flat
+// theme surface rather than an admin-configurable gradient.
 export const BRAND_DEFAULTS = {
-  primaryColor: '#4f46e5',
-  accentColor: '#7c3aed',
+  primaryColor: '#4f8cff',
+  accentColor: '#f2b830',
   sidebarFromColor: '#ffffff',
   sidebarToColor: '#fbfbfe',
 } as const;

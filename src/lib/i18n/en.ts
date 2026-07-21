@@ -33,6 +33,8 @@ export const en = {
     none: 'None',
     collapse: 'Collapse',
     expand: 'Expand',
+    darkMode: 'Switch to dark mode',
+    lightMode: 'Switch to light mode',
     select: 'Select…',
     notProvided: 'Not provided',
     error: 'Something went wrong. Please try again.',

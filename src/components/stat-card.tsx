@@ -8,14 +8,16 @@ export interface StatBreakdownRow {
   tone?: Tone;
 }
 
-// SVG stroke hex per tone (SVG can't use the Tailwind bg-* classes TONE_DOT gives).
+// SVG stroke color per tone (SVG can't use the Tailwind bg-* classes TONE_DOT
+// gives) — reads the same --tone-* CSS vars as tones.ts so sparklines stay
+// correctly hued across Midnight/Azure.
 const SPARK_STROKE: Record<Tone, string> = {
-  slate: '#9497ac',
-  blue: '#2f6fed',
-  green: '#0f9d6d',
-  amber: '#c77d0a',
-  red: '#dc3545',
-  violet: '#7c3aed',
+  slate: 'var(--tone-slate)',
+  blue: 'var(--tone-blue)',
+  green: 'var(--tone-green)',
+  amber: 'var(--tone-amber)',
+  red: 'var(--tone-red)',
+  violet: 'var(--tone-violet)',
 };
 
 /** Tiny inline trend line from a series of counts (e.g. the 14-day case trend). */

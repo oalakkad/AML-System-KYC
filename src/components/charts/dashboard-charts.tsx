@@ -18,28 +18,28 @@ import {
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import type { CaseStatus, RiskRating, AlertType } from '@/lib/constants';
 
-const AXIS_STYLE = { fontSize: 11, fill: '#9497ac', fontWeight: 600 };
-const GRID_STROKE = '#e6e7f2';
+const AXIS_STYLE = { fontSize: 11, fill: 'var(--color-faint)', fontWeight: 600 };
+const GRID_STROKE = 'var(--color-hairline)';
 
 const RISK_COLOR: Record<RiskRating, string> = {
-  LOW: '#10b981',
-  MEDIUM: '#f59e0b',
-  HIGH: '#ef4444',
+  LOW: 'var(--tone-green)',
+  MEDIUM: 'var(--tone-amber)',
+  HIGH: 'var(--tone-red)',
 };
 
 const STATUS_COLOR: Record<CaseStatus, string> = {
-  DRAFT: '#94a3b8',
-  PENDING_COMPLIANCE: '#3b82f6',
-  RETURNED: '#f59e0b',
-  PENDING_MANAGER: '#8b5cf6',
-  APPROVED: '#10b981',
-  REJECTED: '#ef4444',
+  DRAFT: 'var(--tone-slate)',
+  PENDING_COMPLIANCE: 'var(--tone-blue)',
+  RETURNED: 'var(--tone-amber)',
+  PENDING_MANAGER: 'var(--tone-violet)',
+  APPROVED: 'var(--tone-green)',
+  REJECTED: 'var(--tone-red)',
 };
 
 const ALERT_TYPE_COLOR: Record<AlertType, string> = {
-  STRUCTURING: '#ef4444',
-  LARGE_TRANSACTION: '#f59e0b',
-  HIGH_RISK_JURISDICTION: '#8b5cf6',
+  STRUCTURING: 'var(--tone-red)',
+  LARGE_TRANSACTION: 'var(--tone-amber)',
+  HIGH_RISK_JURISDICTION: 'var(--tone-violet)',
 };
 
 /** Only the last (current) point gets a marker — with a soft glow — the rest of the line stays clean. */
@@ -47,8 +47,8 @@ function LastPointDot({ cx, cy, index, dataLength }: { cx?: number; cy?: number;
   if (cx === undefined || cy === undefined || index !== dataLength - 1) return null;
   return (
     <g>
-      <circle cx={cx} cy={cy} r={4.5} fill="#7c3aed" filter="url(#trendDotGlow)" />
-      <circle cx={cx} cy={cy} r={4.5} fill="#7c3aed" stroke="#fff" strokeWidth={1.5} />
+      <circle cx={cx} cy={cy} r={4.5} fill="var(--color-accent)" filter="url(#trendDotGlow)" />
+      <circle cx={cx} cy={cy} r={4.5} fill="var(--color-accent)" stroke="var(--color-card)" strokeWidth={1.5} />
     </g>
   );
 }
@@ -70,7 +70,7 @@ function ChartTooltip({
       <p className="font-bold text-ink mb-1.5">{labelFormatter ? labelFormatter(label ?? '') : label}</p>
       {payload.map((p, i) => (
         <p key={i} className="flex items-center gap-2 font-semibold text-muted tnum">
-          <span className="size-2 rounded-full" style={{ backgroundColor: p.color ?? '#4f46e5' }} />
+          <span className="size-2 rounded-full" style={{ backgroundColor: p.color ?? 'var(--color-primary)' }} />
           {p.name}: <span className="font-bold text-ink ms-auto">{p.value}</span>
         </p>
       ))}
@@ -126,7 +126,7 @@ export function CaseTrendChart({
               <XAxis
                 dataKey="label"
                 tick={AXIS_STYLE}
-                axisLine={{ stroke: '#e6e7f2' }}
+                axisLine={{ stroke: 'var(--color-hairline)' }}
                 tickLine={false}
                 interval="preserveStartEnd"
               />
@@ -139,7 +139,7 @@ export function CaseTrendChart({
                 domain={[0, yMax]}
                 ticks={yTicks}
               />
-              <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#d3d5e6', strokeWidth: 1 }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--color-hairline-strong)', strokeWidth: 1 }} />
               <Area
                 type="monotone"
                 dataKey="count"
@@ -148,7 +148,7 @@ export function CaseTrendChart({
                 strokeWidth={2.5}
                 fill="url(#trendGradient)"
                 dot={<LastPointDot dataLength={data.length} />}
-                activeDot={{ r: 5.5, fill: 'var(--color-accent)', strokeWidth: 1.5, stroke: '#fff' }}
+                activeDot={{ r: 5.5, fill: 'var(--color-accent)', strokeWidth: 1.5, stroke: 'var(--color-card)' }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -176,9 +176,9 @@ export function RiskDistributionChart({
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 16, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
               <CartesianGrid stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e6e7f2' }} tickLine={false} />
+              <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: 'var(--color-hairline)' }} tickLine={false} />
               <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} allowDecimals={false} width={36} />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--color-subtle)' }} />
               <Bar dataKey="count" name={title} radius={[6, 6, 0, 0]} maxBarSize={52}>
                 {chartData.map((d) => (
                   <Cell key={d.rating} fill={RISK_COLOR[d.rating]} />
@@ -233,7 +233,7 @@ export function StatusBreakdownChart({
                     tickLine={false}
                     width={110}
                   />
-                  <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--color-subtle)' }} />
                   <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={16}>
                     {chartData.map((d) => (
                       <Cell key={d.status} fill={STATUS_COLOR[d.status]} />
@@ -285,9 +285,9 @@ export function AlertVolumeChart({
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 16, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
                 <CartesianGrid stroke={GRID_STROKE} vertical={false} />
-                <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: '#e6e7f2' }} tickLine={false} />
+                <XAxis dataKey="name" tick={AXIS_STYLE} axisLine={{ stroke: 'var(--color-hairline)' }} tickLine={false} />
                 <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} allowDecimals={false} width={36} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f6f7fb' }} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--color-subtle)' }} />
                 <Bar dataKey="count" name={title} radius={[6, 6, 0, 0]} maxBarSize={52}>
                   {chartData.map((d) => (
                     <Cell key={d.alertType} fill={ALERT_TYPE_COLOR[d.alertType]} />
